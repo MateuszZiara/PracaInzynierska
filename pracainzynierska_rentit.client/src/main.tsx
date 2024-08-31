@@ -8,7 +8,7 @@ import {
     Route,
 } from 'react-router-dom';
 import { MantineProvider, createTheme } from '@mantine/core';
-import { Home } from './Home/Home';
+import {Home} from './Home/Home';
 
 const theme = createTheme({
 

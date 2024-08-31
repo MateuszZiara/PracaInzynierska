@@ -1,0 +1,144 @@
+@font-face {
+    font-family: "Normal";   /*Can be any text*/
+    src: local("AirbnbCerealLight"),
+    url('../Fonts/Montserrat-Regular.ttf') format("truetype");
+}
+@font-face {
+    font-family: "Bolder";   /*Can be any text*/
+    src: local("AirbnbCerealLight"),
+    url('../Fonts/Montserrat-SemiBold.ttf') format("truetype");
+}
+.header{
+    width: 100vw;
+    min-height: 80px;
+    max-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-size: 1.2rem;
+    font-family: Bolder, -apple-system, serif;
+    
+}
+.it{
+    color: rebeccapurple;
+}
+.logo{
+    font-size: 1.5rem;
+}
+.navigation{
+    display: flex;
+    max-height: 80px;
+    align-items: center;
+}
+.active{
+    padding: 2.5rem;
+    cursor: pointer;
+    display: block;
+}
+.unactive{
+    color: rgba(0,0,0,50%);
+    padding: 2.5rem;
+    cursor: pointer;
+    display: block;
+    transition: 0.3s;
+}
+.unactive:hover
+{
+    color: rgba(0,0,0);
+    transition: 0.3s;
+}
+.hamburger {
+    font-size: 24px;
+    cursor: pointer;
+    margin-right: 20px;
+    transition: transform 0.3s ease;
+    position: absolute;
+    min-height: 80px;
+    max-height: 80px;
+    left: 2vh;
+}
+.profile{
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,50%);
+    max-height: 40px;
+    padding: 20px;
+    border-radius: 20px;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+.profile:hover{
+        box-shadow: 1px 5px 5px rgba(0,0,0,20%);
+        cursor: pointer;
+    transition: 0.2s;
+}
+.hamburgerProfile {
+    font-size: 15px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    min-height: 80px;
+    max-height: 80px;
+}
+@media (max-width: 1105px) { 
+    .logo{
+        height: 0px;
+        width: 0;
+        font-size: 0;
+    }
+}
+
+@media (max-width: 800px) { 
+    body{
+        overflow-x: auto;
+    }
+    .active{
+        padding: 1vw;
+    }
+    .unactive{
+        padding: 1vw;
+    }
+    .hamburger
+    {
+        position: inherit;
+        margin-right: 0;
+    }
+}
+@media (max-width: 550px) {
+    .hamburgerProfile {
+        font-size: 12px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+        min-height: 80px;
+        max-height: 80px;
+    }
+    .profile{
+        display: flex;
+        align-items: center;
+        border: 0;
+        max-height: 40px;
+        padding: 0px;
+        border-radius: 20px;
+        box-sizing: border-box;
+        transition: 0.2s;
+    }
+}
+@media (max-width: 450px) { 
+    .header{
+        font-size: 12px;
+    }
+    .hamburgerProfile{
+        font-size: 0;
+    }
+}
+@media (max-width: 320px) {
+    .header{
+        font-size: 12px;
+    }
+    .hamburgerProfile{
+        font-size: 10px;
+    }
+    .avatar{
+        height: 0;
+        width: 0;
+    }
+}
