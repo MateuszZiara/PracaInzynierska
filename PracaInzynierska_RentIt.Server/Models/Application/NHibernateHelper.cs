@@ -28,7 +28,8 @@ public class NHibernateHelper
                             "Server=localhost\\SQLEXPRESS;Database=RentIt;Integrated Security=SSPI;Application Name=RentIt;TrustServerCertificate=true;")
                     ) 
                     .Mappings(m =>
-                       m.AutoMappings.Add(AutoMap.AssemblyOf<AspNetUsers>()))
+                        m.FluentMappings
+                            .AddFromAssemblyOf<AspNetUsers>())
                     .ExposeConfiguration(cfg => new SchemaUpdate(cfg).Execute(false, true))
                     .BuildSessionFactory();
             }

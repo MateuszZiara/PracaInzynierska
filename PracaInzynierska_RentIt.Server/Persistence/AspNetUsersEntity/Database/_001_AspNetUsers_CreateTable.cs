@@ -32,7 +32,7 @@ public class _001_AspNetUsers_CreateTable : Migration
             .WithColumn(nameof(AspNetUsers.CreateTime)).AsDateTime().NotNullable()
             .WithColumn(nameof(AspNetUsers.ModifiedBy)).AsString().Nullable()
             .WithColumn(nameof(AspNetUsers.ModifiedTime)).AsDateTime().Nullable()
-            .WithColumn(nameof(AspNetUsers.Admin)).AsBoolean().NotNullable();
+            .WithColumn(nameof(AspNetUsers.UserRank)).AsInt32().NotNullable();
     }
     public override void Down()
     {

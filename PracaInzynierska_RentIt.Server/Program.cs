@@ -1,5 +1,10 @@
 using System.Reflection;
 using FluentMigrator.Runner;
+using Microsoft.EntityFrameworkCore;
+using PracaInzynierska_RentIt.Server.Models.Application.DBContext;
+using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
+using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
+using RentIt_PracaInzynierska.Server.Models.IdentityLogin;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +15,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<AspNetUsersRepository>();
+builder.Services.AddScoped<AspNetUsersService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -29,9 +36,16 @@ builder.Services.AddFluentMigratorCore()
             .ScanIn(Assembly.GetExecutingAssembly()).For.All();
     })
     .AddLogging(config => config.AddFluentMigratorConsole());
+builder.Services.AddDbContext<DataContext>(options =>
+    options.UseSqlServer(
+        "Server=localhost\\SQLEXPRESS;Database=RentIt;Integrated Security=SSPI;Application Name=RentIt; TrustServerCertificate=true;"));
+builder.Services.AddIdentityApiEndpoints<AspNetUsers>()
+    .AddEntityFrameworkStores<DataContext>();
 var app = builder.Build();
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.MapIdentityApi<AspNetUsers>();
+app.MapIdentityApiCustom<AspNetUsers>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

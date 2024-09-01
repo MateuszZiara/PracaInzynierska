@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 using PracaInzynierska_RentIt.Server.Models.Application;
+using RentIt_PracaInzynierska.Server.Models.AspNetUsersEntity;
 
 namespace PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 
@@ -12,11 +13,11 @@ public class AspNetUsers : IdentityUser
         ModifiedTime = null;
         ModifiedBy = null;
         CreateTime = DateTime.Now;
-        Admin = false;
+        UserRank = UserRank.User;
     }
     public virtual string? FirstName { get; set; }
     public virtual string? LastName { get; set; }
-    public virtual bool Admin { get; set; }
+    public virtual UserRank UserRank { get; set; }
     public virtual string? Provider { get; set; }
     public virtual string? Name { get; set; } 
     public virtual bool? Avatar {get; set; }

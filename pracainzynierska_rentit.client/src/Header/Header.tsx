@@ -4,9 +4,10 @@ import { Avatar } from "@mantine/core";
 import { AuthModal } from "./Auth";
 import styles from './Header.module.css';
 import {ProfileDropdown} from "./ProfileDropdown.tsx";
-
+import { BigModal } from "./BigModal";
 export function Header() {
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isModalOpenLeft, setModalOpenLeft] = useState(false);
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
 
@@ -14,7 +15,9 @@ export function Header() {
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const handleOpenModal = () => setModalOpen(true);
+    const handleOpenModalLeft = () => setModalOpenLeft(true);
     const handleCloseModal = () => setModalOpen(false);
+    const handleCloseModalLeft = () => setModalOpenLeft(false);
 
     const toggleDropdown = () => {
         if (profileRef.current) {
@@ -52,6 +55,7 @@ export function Header() {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 handleCloseModal();
+                handleCloseModalLeft()
                 closeDropdown();
             }
         };
@@ -65,7 +69,7 @@ export function Header() {
 
     return (
         <div className={styles.header}>
-            <FaBars className={styles.hamburger} onClick={handleOpenModal} />
+            <FaBars className={styles.hamburger} onClick={handleOpenModalLeft} />
             <div className={styles.logo}>
                 <span className={styles.rent}>Rent</span>
                 <span className={styles.it}>It</span>
@@ -85,10 +89,11 @@ export function Header() {
                     <ProfileDropdown
                         ref={dropdownRef}
                         position={dropdownPosition}
-                        onOpenModal={handleOpenModal} // Pass down the function
+                        onOpenModal={handleOpenModal} 
                     />
                 )}
             </div>
+            {isModalOpenLeft && <BigModal onClose={handleCloseModalLeft} />}
             {isModalOpen && <AuthModal onClose={handleCloseModal} />}
         </div>
     );

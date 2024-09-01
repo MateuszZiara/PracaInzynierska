@@ -28,7 +28,9 @@ public class AspNetUsersRepository : IAspNetUsersRepository
 
     public bool CheckEmail(string email)
     {
-        var user = NHibernateHelper.OpenSession().Query<AspNetUsers>().First(x => x.Email == email);
-        return user != null;
+        var user = NHibernateHelper.OpenSession().Query<AspNetUsers>().Where(x => x.Email == email).ToList();
+        if (user.Count == 0)
+            return false;
+        return true;
     }
 }
