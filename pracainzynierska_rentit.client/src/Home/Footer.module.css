@@ -1,0 +1,45 @@
+.footer {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    height: 55px; 
+    background-color: white;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    z-index: 100;
+}
+
+.footerContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 0 20px;
+    color: black;
+}
+
+.socialIcons {
+    display: flex;
+    gap: 10px;
+}
+
+.socialIcons > * {
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.socialIcons > *:hover {
+    transform: scale(1.2);
+}
+.left{
+    display: flex;
+    flex-direction: row;
+}
+.text
+{
+    margin-left: 20px;
+    cursor: pointer;
+}

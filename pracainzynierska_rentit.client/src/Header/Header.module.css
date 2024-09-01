@@ -17,7 +17,10 @@
     justify-content: space-around;
     font-size: 1.2rem;
     font-family: Bolder, -apple-system, serif;
-    
+    background-color: white;
+    position: sticky;
+    top: 0;
+    z-index: 999;
 }
 .it{
     color: rebeccapurple;
