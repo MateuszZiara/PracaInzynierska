@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PracaInzynierska_RentIt.Server.Models.Application;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 
 namespace PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
@@ -23,5 +24,11 @@ public class AspNetUsersRepository : IAspNetUsersRepository
     public bool Delete(Guid id)
     {
         throw new NotImplementedException();
+    }
+
+    public bool CheckEmail(string email)
+    {
+        var user = NHibernateHelper.OpenSession().Query<AspNetUsers>().First(x => x.Email == email);
+        return user != null;
     }
 }
