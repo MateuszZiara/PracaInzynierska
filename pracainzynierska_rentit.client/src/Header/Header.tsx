@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import { Avatar } from "@mantine/core";
-import { BigModal } from "./BigModal";
-import { ProfileDropdown } from "./ProfileDropdown";
+import { AuthModal } from "./Auth";
 import styles from './Header.module.css';
+import {ProfileDropdown} from "./ProfileDropdown.tsx";
 
 export function Header() {
     const [isModalOpen, setModalOpen] = useState(false);
@@ -20,7 +20,7 @@ export function Header() {
         if (profileRef.current) {
             const rect = profileRef.current.getBoundingClientRect();
             setDropdownPosition({
-                top: rect.bottom + 15, // 15px below the profile div
+                top: rect.bottom + 15,
                 right: window.innerWidth - rect.right,
             });
         }
@@ -81,9 +81,15 @@ export function Header() {
                 <div className={styles.avatar}>
                     <Avatar variant="transparent" radius="xl" src="" size="lg" />
                 </div>
-                {isDropdownOpen && <ProfileDropdown ref={dropdownRef} position={dropdownPosition} />}
+                {isDropdownOpen && (
+                    <ProfileDropdown
+                        ref={dropdownRef}
+                        position={dropdownPosition}
+                        onOpenModal={handleOpenModal} // Pass down the function
+                    />
+                )}
             </div>
-            {isModalOpen && <BigModal onClose={handleCloseModal} />}
+            {isModalOpen && <AuthModal onClose={handleCloseModal} />}
         </div>
     );
 }

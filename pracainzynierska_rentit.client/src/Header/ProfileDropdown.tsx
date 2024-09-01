@@ -6,15 +6,16 @@ interface ProfileDropdownProps {
         top: number;
         right: number;
     };
+    onOpenModal: () => void; // New prop to open the modal
 }
 
 export const ProfileDropdown = forwardRef<HTMLDivElement, ProfileDropdownProps>(
-    ({ position }, ref) => {
+    ({ position, onOpenModal }, ref) => {
         return (
             <div className={styles.dropdown} style={{ top: position.top, right: position.right }} ref={ref}>
                 <ul className={styles.menu}>
-                    <li className={styles.menuItem}>Zaloguj się</li>
-                    <li className={styles.menuItem}>Zarejestruj się</li>
+                    <li className={styles.menuItem} onClick={onOpenModal}>Zaloguj się</li>
+                    <li className={styles.menuItem} onClick={onOpenModal}>Zarejestruj się</li>
                     <li className={styles.menuItem}>Centrum pomocy</li>
                 </ul>
             </div>

@@ -1,0 +1,65 @@
+﻿/* Auth.module.css */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 560px;
+    max-width: 90%;
+}
+.headerText{
+    font-size: 15px;
+}
+.header{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+.email{
+    margin-top: 25px;
+}
+.next{
+    margin-top: 15px;
+}.divider {
+     display: flex;
+     align-items: center;
+     text-align: center;
+     margin: 2rem 0;
+     margin-left: 4.25rem;
+     width: 75%;
+ }
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #000;
+}
+
+.divider::before {
+    margin-right: .25em;
+}
+
+.divider::after {
+    margin-left: .25em;
+}
+
+.divider span {
+    color: #661597;
+    font-size: 14px;
+}
+.google{
+    margin-top: 25px;
+}
