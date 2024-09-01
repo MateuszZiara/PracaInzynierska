@@ -11,13 +11,22 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="7.0.0-alpha.4" />
+<<<<<<< HEAD
+    <PackageReference Include="FluentMigrator.Extensions.SqlServer" Version="5.2.0" />
+    <PackageReference Include="FluentMigrator.Runner" Version="5.2.0" />
+=======
     <PackageReference Include="FluentMigrator.Runner" Version="5.2.0" />
     <PackageReference Include="FluentMigrator.Runner.SqlServer" Version="5.2.0" />
+>>>>>>> 63c6f0ffae0700d3b4da753afed148568514d4b2
     <PackageReference Include="FluentNHibernate" Version="3.4.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
       <Version>8.*-*</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.0.0-preview1.24240.8" />
+<<<<<<< HEAD
+    <PackageReference Include="Microsoft.SqlServer.Server" Version="1.0.0" />
+=======
+>>>>>>> 63c6f0ffae0700d3b4da753afed148568514d4b2
     <PackageReference Include="NHibernate" Version="5.5.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>

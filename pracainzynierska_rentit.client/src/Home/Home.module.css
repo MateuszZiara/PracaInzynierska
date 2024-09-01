@@ -1,0 +1,189 @@
+﻿.home{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+.container{
+    height: 100%;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    background-size: cover; /* Ensure the background covers the entire container */
+    background-position: center; /* Center the background image */
+    overflow-x: hidden;
+}
+.section1, .section2, .section3, .section4{
+    width: 100%;
+    height: 100vh;
+    scroll-snap-align: center;
+    flex: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    flex-direction: column;
+    user-select: none;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: opacity 1s ease-in-out;
+    text-justify: auto;
+}
+
+.section1::before, .section2::before, .section3::before, .section4::before{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.7) 48%, transparent);
+    z-index: 1;
+}
+.section1.visible .animatedText1, .section2.visible .animatedText2, .section3.visible .animatedText3 {
+    transform: translateY(0);
+    opacity: 1;
+}
+.activeSection .square {
+    width: 100px;
+    height: 20px;
+    background-color: white;
+}
+.animatedText {
+    opacity: 0;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    font-size: 36px;
+    color: white;
+    z-index: 2;
+}
+.animatedText1 {
+    transform: translateY(50%);
+    position: relative;
+    z-index: 2;
+    color: white;
+    max-width: 30%;
+}
+
+.animatedText2 {
+    transform: translateX(-50%);
+    position: relative;
+    z-index: 2;
+    color: white;
+    max-width: 30%;
+}
+
+.animatedText3 {
+    transform: translateX(50%);
+    position: relative;
+    z-index: 2;
+    color: white;
+    max-width:31%;
+}
+.buttoncustom {
+    color: #FFF;
+    transition: all 0.5s;
+    position: relative;
+    padding: 20px;
+    font-size: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica,
+    Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+    z-index: 3;
+    background-color: rgba(72, 52, 212, 0.8);
+    margin-top: 2rem;
+    user-select: none;
+}
+.buttoncustom:hover {
+    background-color: rgba(72, 52, 212, 0);
+    cursor: pointer;
+}
+
+.buttoncustom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.3s;
+    z-index: 1;
+}
+
+.buttoncustom:hover::before {
+    opacity: 0;
+    transform: scale(0.5, 0.5);
+}
+
+.buttoncustom::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    opacity: 0;
+    transition: all 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transform: scale(1.2, 1.2);
+    background-color: rgba(72, 52, 212, 0);
+}
+
+.buttoncustom:hover::after {
+    opacity: 1;
+    transform: scale(1, 1);
+    background-color: rgba(72, 52, 212, 0);
+}
+.tableOfContents {
+    position: fixed;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    z-index: 1000;
+    color: white;
+}
+.tocItem {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.tocItem span {
+    margin-right: 10px;
+}
+
+.square {
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+.activeSection .square {
+    width: 100px;
+    height: 20px;
+    background-color: white;
+}
+::-webkit-scrollbar {
+    width: 12px; /* Szerokość scrollbara */
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Kolor tła tracka scrollbara */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888; /* Kolor thumba scrollbara */
+    transition: background 0.3s; /* Płynne przejście dla hover */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Kolor thumba scrollbara po najechaniu */
+}
+
+.scrollable {
+    overflow-y: scroll; /* Włącza przewijanie w pionie */
+    scrollbar-width: thin; /* Wąski scrollbar dla Firefox */
+    scrollbar-color: #888 #f1f1f1; /* Kolor thumba i tracka dla Firefox */
+}
