@@ -2,7 +2,7 @@
 
 namespace PracaInzynierska_RentIt.Server.Models.Application;
 
-public abstract class Entity
+public abstract class ApplicationEntity
 {
     public virtual Guid Id { get; set; }
     public virtual DateTime? ModifiedTime { get; set; }
