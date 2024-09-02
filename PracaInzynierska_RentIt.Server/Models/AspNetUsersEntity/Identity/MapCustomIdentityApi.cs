@@ -132,14 +132,6 @@ public static class IdentityApiEndpointRouteBuilderExtensions
             signInManager.AuthenticationScheme =
                 useCookieScheme ? IdentityConstants.ApplicationScheme : IdentityConstants.BearerScheme;
             var result = await signInManager.PasswordSignInAsync(login.Email, login.Password, isPersistent, lockoutOnFailure: true);
-            using (var session = NHibernateHelper.OpenSession())
-            {
-                var query = session.Query<AspNetUsers>().Where(x => x.Email == login.Email).ToList();
-                if (query.Count > 0)
-                {
-                    return TypedResults.Empty;
-                }
-            }
 
             if (result.RequiresTwoFactor)
             {

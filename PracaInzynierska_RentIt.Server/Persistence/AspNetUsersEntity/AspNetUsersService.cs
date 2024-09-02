@@ -47,4 +47,5 @@ public class AspNetUsersService : IAspNetUsersService
         users.Password = hashedPassword;
         return _aspNetUsersRepository.Register(users);
     }
+    
 }

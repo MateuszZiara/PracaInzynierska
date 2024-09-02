@@ -88,14 +88,13 @@ export function AuthModal({ onClose }: AuthModalProps) {
         setFirstnameError(null);
         setLastnameError(null);
         setBirthDateError(null);
-
         let hasError = false;
 
         // Calculate age
         if (birthValue) {
             const today = new Date();
             const birthDate = new Date(birthValue);
-            const age = today.getFullYear() - birthDate.getFullYear();
+            let age = today.getFullYear() - birthDate.getFullYear();
             const monthDifference = today.getMonth() - birthDate.getMonth();
 
             if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
@@ -157,7 +156,27 @@ export function AuthModal({ onClose }: AuthModalProps) {
             setLoading(false);
         }
     };
-
+    const handleLoginClick = async () => 
+    {
+        const loginData = {
+            Email: email,
+            Password: password,
+        };
+        console.log(loginData);
+        const response = await fetch("loginCustomWebsite?useCookies=true&useSessionCookies=false", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginData),
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            const errorMessage = await response.text();
+            setPasswordError("Złe hasło");
+            throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorMessage}`);
+        } else {
+            window.location.reload();
+        }
+    }
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent} ref={modalRef}>
@@ -182,7 +201,6 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                         onChange={(event) => setPassword(event.currentTarget.value)}
                                         error={passwordError}
                                     />
-                                    {passwordError && <p className={styles.error}>{passwordError}</p>}
                                 </div>
                                 <div className={styles.next}>
                                     <Button
@@ -190,7 +208,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                         variant="filled"
                                         color="rgba(127, 56, 181, 1)"
                                         size="lg"
-                                        onClick={handleRegisterClick}
+                                        onClick={handleLoginClick}
                                     >
                                         Zaloguj się
                                     </Button>
