@@ -28,11 +28,12 @@ public class _001_AspNetUsers_CreateTable : Migration
             .WithColumn(nameof(AspNetUsers.Name)).AsString().Nullable()
             .WithColumn(nameof(AspNetUsers.Provider)).AsString().Nullable()
             .WithColumn(nameof(AspNetUsers.Avatar)).AsBoolean().Nullable()
-            .WithColumn(nameof(AspNetUsers.CreateBy)).AsString().NotNullable()
-            .WithColumn(nameof(AspNetUsers.CreateTime)).AsDateTime().NotNullable()
+            .WithColumn(nameof(AspNetUsers.CreateBy)).AsString().Nullable()
+            .WithColumn(nameof(AspNetUsers.CreateTime)).AsDateTime().Nullable()
             .WithColumn(nameof(AspNetUsers.ModifiedBy)).AsString().Nullable()
             .WithColumn(nameof(AspNetUsers.ModifiedTime)).AsDateTime().Nullable()
-            .WithColumn(nameof(AspNetUsers.UserRank)).AsInt32().NotNullable();
+            .WithColumn(nameof(AspNetUsers.BirthDate)).AsDate().NotNullable()
+            .WithColumn(nameof(AspNetUsers.UserRank)).AsInt32().Nullable();
     }
     public override void Down()
     {

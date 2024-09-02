@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using PracaInzynierska_RentIt.Server.Models.Application;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
+using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
 
 namespace PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 
@@ -36,5 +38,13 @@ public class AspNetUsersService : IAspNetUsersService
         if (email == null)
             throw new Exception("There is problem with your email. Contact with the administrator");
         return _aspNetUsersRepository.CheckEmail(email);
+    }
+
+    public ActionResult<AspNetUsers> Register([FromBody] AspNetUsersRegisterDto users)
+    {
+        var passwordHasher = new PasswordHasher<AspNetUsers>();
+        string hashedPassword = passwordHasher.HashPassword(null, users.Password);
+        users.Password = hashedPassword;
+        return _aspNetUsersRepository.Register(users);
     }
 }
