@@ -14,12 +14,17 @@ interface AuthModalProps {
 export function AuthModal({ onClose }: AuthModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
     const [email, setEmail] = useState<string>("");
-    const [firstname, setfirstname] = useState<string>("");
-    const [lastname, setlastname] = useState<string>("");
-    const [password, setpassword] = useState<string>("");
+    const [firstname, setFirstname] = useState<string>("");
+    const [lastname, setLastname] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
     const [isExistingEmail, setIsExistingEmail] = useState<boolean | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
-    const [birthValue, setBirthValue] = useState<Date | null>(null); // Updated state name to camelCase
+    const [birthValue, setBirthValue] = useState<Date | null>(null);
+    const [emailError, setEmailError] = useState<string | null>(null);
+    const [passwordError, setPasswordError] = useState<string | null>(null);
+    const [firstnameError, setFirstnameError] = useState<string | null>(null);
+    const [lastnameError, setLastnameError] = useState<string | null>(null);
+    const [birthDateError, setBirthDateError] = useState<string | null>(null);
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -43,30 +48,98 @@ export function AuthModal({ onClose }: AuthModalProps) {
         };
     }, [onClose]);
 
+    const validateEmail = (email: string): boolean => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validatePassword = (password: string): boolean => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+        return passwordRegex.test(password);
+    };
+
     const handleButtonClick = async () => {
-        setLoading(true); 
-        setIsExistingEmail(null); 
+        setLoading(true);
+        setIsExistingEmail(null);
+        setEmailError(null);
+
+        if (!validateEmail(email)) {
+            setEmailError("Nieprawidłowy adres email");
+            setLoading(false);
+            return;
+        }
+
         try {
             const response = await fetch(`api/AspNetUsers/checkEmail?email=${email}`);
             const result = await response.json();
-            if (result === true) {
-                setIsExistingEmail(true); 
-            } else {
-                setIsExistingEmail(false); 
-            }
+            setIsExistingEmail(result);
         } catch (error) {
             console.error("Error checking email:", error);
-            setIsExistingEmail(null); // Clear state on error
+            setEmailError("An error occurred while checking the email.");
+            setIsExistingEmail(null);
         } finally {
-            setLoading(false); // Stop loading
+            setLoading(false);
         }
     };
+
     const handleRegisterClick = async () => {
-        setLoading(true); // Set loading to true when the button is clicked
+        setLoading(true);
+        setPasswordError(null);
+        setFirstnameError(null);
+        setLastnameError(null);
+        setBirthDateError(null);
+
+        let hasError = false;
+
+        // Calculate age
+        if (birthValue) {
+            const today = new Date();
+            const birthDate = new Date(birthValue);
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDifference = today.getMonth() - birthDate.getMonth();
+
+            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+
+            if (age < 18) {
+                setBirthDateError("Musisz mieć co najmniej 18 lat, aby się zarejestrować.");
+                hasError = true;
+            }
+        } else {
+            setBirthDateError("Data urodzenia nie może być pusta.");
+            hasError = true;
+        }
+
+        if (!validatePassword(password)) {
+            setPasswordError("Hasło musi zawierać przynajmniej jedną dużą literę, jedną cyfrę oraz jeden znak specjalny.");
+            hasError = true;
+        }
+
+        if (!firstname) {
+            setFirstnameError("Imię nie może być puste.");
+            hasError = true;
+        }
+
+        if (!lastname) {
+            setLastnameError("Nazwisko nie może być puste.");
+            hasError = true;
+        }
+
+        if (hasError) {
+            setLoading(false);
+            return;
+        }
+
         try {
-            console.log(birthValue);
-            const registerData = { Email: email, Password: password, FirstName: firstname, LastName: lastname, BirthDate: birthValue, Provider: "Website"};
-            console.log(registerData);
+            const registerData = {
+                Email: email,
+                Password: password,
+                FirstName: firstname,
+                LastName: lastname,
+                BirthDate: birthValue,
+                Provider: "Website"
+            };
             const response = await fetch("api/AspNetUsers/Register", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -74,7 +147,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
             });
 
             if (response.ok) {
-                window.location.reload(); 
+                window.location.reload();
             } else {
                 console.error('Error during registration:', await response.text());
             }
@@ -83,7 +156,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
         } finally {
             setLoading(false);
         }
-    }
+    };
+
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent} ref={modalRef}>
@@ -94,101 +168,106 @@ export function AuthModal({ onClose }: AuthModalProps) {
                     </div>
                 ) : isExistingEmail !== null ? (
                     <div className={styles.secondContent}>
-                        {isExistingEmail ?
-                            (
-                                <>
-                                    <div className={styles.header}>
-                                        <p className={styles.headerText}>Zaloguj się</p>
-                                    </div>
-                                    <div className={styles.email}>
-                                        <PasswordInput
-                                            size="lg"
-                                            radius="md"
-                                            placeholder="Hasło"
-                                            value={password}
-                                            onChange={(event) => setpassword(event.currentTarget.value)}
-                                        />
-                                    </div>
-                                    <div className={styles.next}>
-                                        <Button
-                                            fullWidth
-                                            variant="filled"
-                                            color="rgba(127, 56, 181, 1)"
-                                            size="lg"
-                                            onClick={handleRegisterClick}
-                                        >
-                                            Zaloguj się
-                                        </Button>
-                                    </div>
-                                </>
-                            )
-                            :
-                            (
-                                <>
-                                    <div className={styles.header}>
-                                        <p className={styles.headerText}>Zarejestruj się</p>
-                                    </div>
-                                    <div className={styles.email}>
-                                        <TextInput
-                                            label="Imię"
-                                            size="lg"
-                                            radius="md"
-                                            placeholder="Imię"
-                                            value={firstname}
-                                            onChange={(event) => setfirstname(event.currentTarget.value)}
-                                        />
-                                    </div>
-                                    <div className={styles.email}>
-                                        <TextInput
-                                            label="Nazwisko"
-                                            size="lg"
-                                            radius="md"
-                                            placeholder="Nazwisko"
-                                            value={lastname}
-                                            onChange={(event) => setlastname(event.currentTarget.value)}
-                                        />
-                                    </div>
-                                    <div className={styles.email}>
-                                        <label>Data urodzenia</label>
-                                        <DateInput
-                                            value={birthValue}
-                                            onChange={setBirthValue}
-                                            placeholder="Data urodzenia"
-                                            size="lg"
-                                        />
-                                        <span className={styles.info}>
-                                            Aby się zarejestrować musisz mieć ukończone 18 lat. Zgadzasz się na udostępnianie twojego wieku innym.
-                                        </span>
-                                    </div>
-                                    <div className={styles.email}>
-                                        <PasswordInput
-                                            size="lg"
-                                            radius="md"
-                                            placeholder="Hasło"
-                                            label="Hasło"
-                                            value={password}
-                                            onChange={(event) => setpassword(event.currentTarget.value)}
-                                        />
-                                    </div>
-                                    <div className={styles.email}>
-                                        <span className={styles.info}>
-                                                Klikając zarejestruj wyrażasz zgodę na przetwarzanie twoich danych osobowych.
-                                        </span>
-                                    </div>
-                                    <div className={styles.next}>
-                                        <Button
-                                            fullWidth
-                                            variant="filled"
-                                            color="rgba(127, 56, 181, 1)"
-                                            size="lg"
-                                            onClick={handleRegisterClick}
-                                        >
-                                            Zarejestruj się
-                                        </Button>
-                                    </div>
-                                </>
-                            )
-                        }
+                        {isExistingEmail ? (
+                            <>
+                                <div className={styles.header}>
+                                    <p className={styles.headerText}>Zaloguj się</p>
+                                </div>
+                                <div className={styles.email}>
+                                    <PasswordInput
+                                        size="lg"
+                                        radius="md"
+                                        placeholder="Hasło"
+                                        value={password}
+                                        onChange={(event) => setPassword(event.currentTarget.value)}
+                                        error={passwordError}
+                                    />
+                                    {passwordError && <p className={styles.error}>{passwordError}</p>}
+                                </div>
+                                <div className={styles.next}>
+                                    <Button
+                                        fullWidth
+                                        variant="filled"
+                                        color="rgba(127, 56, 181, 1)"
+                                        size="lg"
+                                        onClick={handleRegisterClick}
+                                    >
+                                        Zaloguj się
+                                    </Button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className={styles.header}>
+                                    <p className={styles.headerText}>Zarejestruj się</p>
+                                </div>
+                                <div className={styles.email}>
+                                    <TextInput
+                                        label="Imię"
+                                        size="lg"
+                                        radius="md"
+                                        placeholder="Imię"
+                                        value={firstname}
+                                        onChange={(event) => setFirstname(event.currentTarget.value)}
+                                        error={firstnameError}
+                                    />
+                                </div>
+                                <div className={styles.email}>
+                                    <TextInput
+                                        label="Nazwisko"
+                                        size="lg"
+                                        radius="md"
+                                        placeholder="Nazwisko"
+                                        value={lastname}
+                                        onChange={(event) => setLastname(event.currentTarget.value)}
+                                        error={lastnameError}
+                                    />
+                                </div>
+                                <div className={styles.email}>
+                                    <label>Data urodzenia</label>
+                                    <DateInput
+                                        value={birthValue}
+                                        onChange={setBirthValue}
+                                        placeholder="Data urodzenia"
+                                        size="lg"
+                                    />
+                                    <span className={styles.info}>
+                                        {birthDateError && <p className={styles.error}>Aby się zarejestrować musisz mieć ukończone 18 lat. Zgadzasz się na udostępnianie twojego wieku innym.</p>}
+                                    </span>
+                                    
+                                </div>
+                                <div className={styles.email}>
+                                    <PasswordInput
+                                        size="lg"
+                                        radius="md"
+                                        placeholder="Hasło"
+                                        label="Hasło"
+                                        value={password}
+                                        onChange={(event) => setPassword(event.currentTarget.value)}
+                                        error={passwordError}
+                                    />
+                                    <span className={styles.info}>
+                                        Hasło musi zawierać przynajmniej jedną dużą literę, jedną cyfrę oraz jeden znak specjalny.
+                                    </span>
+                                </div>
+                                <div className={styles.email}>
+                                    <span className={styles.info}>
+                                        Klikając zarejestruj wyrażasz zgodę na przetwarzanie twoich danych osobowych.
+                                    </span>
+                                </div>
+                                <div className={styles.next}>
+                                    <Button
+                                        fullWidth
+                                        variant="filled"
+                                        color="rgba(127, 56, 181, 1)"
+                                        size="lg"
+                                        onClick={handleRegisterClick}
+                                    >
+                                        Zarejestruj się
+                                    </Button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 ) : (
                     <>
@@ -202,6 +281,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                 placeholder="Adres Email"
                                 value={email}
                                 onChange={(event) => setEmail(event.currentTarget.value)}
+                                error={emailError}
                             />
                         </div>
                         <div className={styles.next}>
