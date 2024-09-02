@@ -46,6 +46,14 @@ export default defineConfig({
             '^/weatherforecast': {
                 target,
                 secure: false
+            },
+            '^/api/AspNetUsers/checkEmail': {
+                target,
+                secure: false
+            },
+            '^/api/AspNetUsers/Register': {
+                target,
+                secure: false
             }
         },
         port: 5173,

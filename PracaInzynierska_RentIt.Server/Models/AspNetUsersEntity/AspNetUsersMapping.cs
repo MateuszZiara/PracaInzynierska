@@ -18,6 +18,7 @@ public class AspNetUsersMapping : ClassMap<AspNetUsers>
         Map(x => x.CreateBy);
         Map(x => x.CreateTime);
         Map(x => x.ModifiedTime);
+        Map(x => x.BirthDate);
         //Identity
         Map(x => x.UserName);
         Map(x => x.NormalizedUserName);

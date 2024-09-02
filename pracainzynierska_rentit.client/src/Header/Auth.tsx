@@ -1,6 +1,7 @@
 ﻿import React, { useEffect, useRef, useState } from "react";
 import styles from './Auth.module.css';
 import { Button, TextInput, Loader, PasswordInput } from "@mantine/core";
+// @ts-ignore
 import { LoginSocialFacebook, LoginSocialGoogle } from 'reactjs-social-login';
 import { FacebookLoginButton, GoogleLoginButton } from "react-social-login-buttons";
 import { DateInput } from 'rsuite';
@@ -43,17 +44,15 @@ export function AuthModal({ onClose }: AuthModalProps) {
     }, [onClose]);
 
     const handleButtonClick = async () => {
-        setLoading(true); // Start loading
-        setIsExistingEmail(null); // Clear previous state
-
+        setLoading(true); 
+        setIsExistingEmail(null); 
         try {
-            const response = await fetch(`https://localhost:7214/checkEmail?email=${email}`);
+            const response = await fetch(`api/AspNetUsers/checkEmail?email=${email}`);
             const result = await response.json();
-
-            if (result.exists) {
-                setIsExistingEmail(true); // Email exists, show "Log In"
+            if (result === true) {
+                setIsExistingEmail(true); 
             } else {
-                setIsExistingEmail(false); // Email does not exist, show "Register"
+                setIsExistingEmail(false); 
             }
         } catch (error) {
             console.error("Error checking email:", error);
@@ -62,7 +61,29 @@ export function AuthModal({ onClose }: AuthModalProps) {
             setLoading(false); // Stop loading
         }
     };
+    const handleRegisterClick = async () => {
+        setLoading(true); // Set loading to true when the button is clicked
+        try {
+            console.log(birthValue);
+            const registerData = { Email: email, Password: password, FirstName: firstname, LastName: lastname, BirthDate: birthValue, Provider: "Website"};
+            console.log(registerData);
+            const response = await fetch("api/AspNetUsers/Register", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(registerData),
+            });
 
+            if (response.ok) {
+                window.location.reload(); 
+            } else {
+                console.error('Error during registration:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error during registration:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent} ref={modalRef}>
@@ -87,6 +108,17 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                             value={password}
                                             onChange={(event) => setpassword(event.currentTarget.value)}
                                         />
+                                    </div>
+                                    <div className={styles.next}>
+                                        <Button
+                                            fullWidth
+                                            variant="filled"
+                                            color="rgba(127, 56, 181, 1)"
+                                            size="lg"
+                                            onClick={handleRegisterClick}
+                                        >
+                                            Zaloguj się
+                                        </Button>
                                     </div>
                                 </>
                             )
@@ -149,7 +181,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                             variant="filled"
                                             color="rgba(127, 56, 181, 1)"
                                             size="lg"
-                                            onClick={handleButtonClick}
+                                            onClick={handleRegisterClick}
                                         >
                                             Zarejestruj się
                                         </Button>
