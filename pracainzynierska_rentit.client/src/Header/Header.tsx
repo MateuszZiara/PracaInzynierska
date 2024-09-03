@@ -3,13 +3,17 @@ import { FaBars } from "react-icons/fa";
 import { Avatar } from "@mantine/core";
 import { AuthModal } from "./Auth";
 import styles from './Header.module.css';
-import {ProfileDropdown} from "./ProfileDropdown.tsx";
+import { ProfileDropdown } from "./ProfileDropdown";
 import { BigModal } from "./BigModal";
+
 export function Header() {
     const [isModalOpen, setModalOpen] = useState(false);
     const [isModalOpenLeft, setModalOpenLeft] = useState(false);
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
 
     const profileRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -55,7 +59,7 @@ export function Header() {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 handleCloseModal();
-                handleCloseModalLeft()
+                handleCloseModalLeft();
                 closeDropdown();
             }
         };
@@ -66,6 +70,35 @@ export function Header() {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
+
+    useEffect(() => {
+        const checkUserLoggedIn = async () => {
+            try {
+                const response = await fetch("api/AspNetUsers/info", {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log("First Name:", data.firstName); // Log the firstName to the console
+                    setFirstName(data.firstName);
+                    setLastName(data.lastName);
+                    setIsLoggedIn(true);
+                } else {
+                    console.log("Niezalogowany");
+                    setIsLoggedIn(false);
+                }
+            } catch (error) {
+                console.error("Error checking login status:", error);
+                setIsLoggedIn(false);
+            }
+        };
+        checkUserLoggedIn();
+    }, []);
+
+    const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`; // Create initials from firstName and lastName
 
     return (
         <div className={styles.header}>
@@ -83,13 +116,24 @@ export function Header() {
             <div className={styles.profile} onClick={toggleDropdown} ref={profileRef}>
                 <FaBars className={styles.hamburgerProfile} />
                 <div className={styles.avatar}>
-                    <Avatar variant="transparent" radius="xl" src="" size="lg" />
+                    {isLoggedIn ? (
+                        <Avatar
+                            color="initials"
+                            radius="xl"
+                            size="md"
+                            name={`${firstName} ${lastName}`} // Pass full name to the Avatar
+                            className={styles.avatarInitials}
+                        />
+                    ) : (
+                        <Avatar variant="transparent" radius="xl" size="lg" />
+                    )}
                 </div>
                 {isDropdownOpen && (
                     <ProfileDropdown
                         ref={dropdownRef}
                         position={dropdownPosition}
-                        onOpenModal={handleOpenModal} 
+                        onOpenModal={handleOpenModal}
+                        isLoggedIn={isLoggedIn} // Pass the login state
                     />
                 )}
             </div>

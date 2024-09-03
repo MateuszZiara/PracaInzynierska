@@ -6,17 +6,31 @@ interface ProfileDropdownProps {
         top: number;
         right: number;
     };
-    onOpenModal: () => void; // New prop to open the modal
+    onOpenModal: () => void; 
+    isLoggedIn: boolean; 
 }
 
 export const ProfileDropdown = forwardRef<HTMLDivElement, ProfileDropdownProps>(
-    ({ position, onOpenModal }, ref) => {
+    ({ position, onOpenModal, isLoggedIn }, ref) => {
         return (
             <div className={styles.dropdown} style={{ top: position.top, right: position.right }} ref={ref}>
                 <ul className={styles.menu}>
-                    <li className={styles.menuItem} onClick={onOpenModal}>Zaloguj się</li>
-                    <li className={styles.menuItem} onClick={onOpenModal}>Zarejestruj się</li>
-                    <li className={styles.menuItem}>Centrum pomocy</li>
+                    {isLoggedIn ? (
+                        <>
+                            <li className={styles.menuItem} onClick={() => window.location.href = "/Settings"}>Ustawienia</li>
+                            <li className={styles.menuItem}>Dodaj swoje mieszkanie</li>
+                            <li className={styles.menuItem}>Dodaj swoje ogłoszenie</li>
+                            <li className={styles.menuItem}>Twój test osobowości</li>
+                            <li className={styles.menuItem}>Centrum pomocy</li>
+                            <li className={styles.menuItem}>Wyloguj się</li>
+                        </>
+                    ) : (
+                        <>
+                            <li className={styles.menuItem} onClick={onOpenModal}>Zaloguj się</li>
+                            <li className={styles.menuItem} onClick={onOpenModal}>Zarejestruj się</li>
+                            <li className={styles.menuItem}>Centrum pomocy</li>
+                        </>
+                    )}
                 </ul>
             </div>
         );

@@ -58,6 +58,10 @@ export default defineConfig({
             '^/loginCustomWebsite': {
                 target,
                 secure: false
+            },
+            '^/api/AspNetUsers/info': {
+                target,
+                secure: false
             }
         },
         port: 5173,

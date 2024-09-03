@@ -47,5 +47,6 @@ public class AspNetUsersService : IAspNetUsersService
         users.Password = hashedPassword;
         return _aspNetUsersRepository.Register(users);
     }
-    
+
+    public async Task<AspNetUsersResponseDTO> GetUserInfo() => await _aspNetUsersRepository.GetUserInfo();
 }

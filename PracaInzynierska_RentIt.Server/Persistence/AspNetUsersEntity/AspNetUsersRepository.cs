@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
+using NHibernate;
 using PracaInzynierska_RentIt.Server.Models.Application;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
@@ -7,6 +9,11 @@ namespace PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 
 public class AspNetUsersRepository : IAspNetUsersRepository
 {
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    public AspNetUsersRepository(IHttpContextAccessor httpContextAccessor)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
     public List<AspNetUsers> GetAll()
     {
         throw new NotImplementedException();
@@ -48,6 +55,30 @@ public class AspNetUsersRepository : IAspNetUsersRepository
             }
         }
     }
-    
-    
+    public async Task<AspNetUsersResponseDTO> GetUserInfo()
+    {
+        var user = _httpContextAccessor.HttpContext?.User;
+        if (user?.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+            {
+                throw new Exception("User ID claim not found.");
+            }
+            if (!Guid.TryParse(userIdClaim.Value, out Guid userId))
+            {
+                throw new Exception("Invalid user ID format.");
+            }
+            using (var session = NHibernateHelper.OpenSession())
+            {
+                var userEntity = session.Get<AspNetUsers>(userIdClaim.Value);
+                if (userEntity == null)
+                {
+                    throw new ObjectNotFoundException(userEntity, "Can't find user");
+                }
+                return userEntity.ToResponse();
+            }
+        }
+        throw new UnauthorizedAccessException();
+    }
 }

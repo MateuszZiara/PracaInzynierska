@@ -21,6 +21,23 @@ public class AspNetUsersController : ControllerBase
     
     [HttpPost("Register")]
     public ActionResult<AspNetUsers> Register([FromBody] AspNetUsersRegisterDto user) => _aspNetUsersServices.Register(user);
+
+    [HttpGet("info")]
+    public async Task<AspNetUsersResponseDTO> GetUserInfo() => await _aspNetUsersServices.GetUserInfo();
+    
+    [HttpGet("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        foreach (var cookie in Request.Cookies.Keys)
+        {
+            if (cookie.StartsWith(".AspNetCore.Identity.Application"))
+            {
+                Response.Cookies.Delete(cookie);
+            }
+        }
+            
+        return Ok("Identity cookies deleted successfully.");
+    }
 }
 
 

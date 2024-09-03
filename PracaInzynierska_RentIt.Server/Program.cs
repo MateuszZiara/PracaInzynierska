@@ -17,6 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AspNetUsersRepository>();
 builder.Services.AddScoped<AspNetUsersService>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",

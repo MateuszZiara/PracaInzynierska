@@ -1,0 +1,182 @@
+﻿.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: auto;
+    padding-top: 20px;
+}
+
+.verifyBlock {
+    width: 750px;
+    padding: 20px;
+    margin-bottom: 15px;
+    background-color: #E8F3FF;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+}
+
+.verifyButton {
+    background-color: #0073b1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+
+.block {
+    width: 750px;
+    padding: 20px;
+    text-align: left;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    background-color: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+    margin-bottom: -1px; /* To ensure blocks stick together */
+    position: relative;
+}
+
+.block:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.icon {
+    margin-right: 15px;
+    font-size: 24px;
+    color: #0073b1; /* LinkedIn blue */
+}
+
+.toggleIcon {
+    margin-left: auto;
+    font-size: 20px;
+    color: #0073b1;
+}
+
+.expandedContent {
+    width: 750px;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: max-height 0.5s ease, padding 0.5s ease, opacity 0.5s ease;
+    max-height: 0;
+    padding: 0 20px;
+    opacity: 0;
+}
+
+.expandedContent.expanded {
+    max-height: 750px; /* Adjust based on the content height */
+    opacity: 1;
+    padding: 10px 20px;
+}
+
+.subBlock {
+    padding: 10px 0;
+    font-size: 16px;
+    color: #555;
+    border-bottom: 1px solid #ddd;
+}
+
+.subBlock:last-child {
+    border-bottom: none;
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.saveButton {
+    background-color: #0073b1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+
+.saveButton:hover {
+    background-color: #005582;
+}
+
+.blockContent {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+.blockContent label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+
+.verifyBlock {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: default;
+}
+
+.verification {
+    font-size:48px;
+    color: #4caf50; /* Zielony kolor dla ikony weryfikacji */
+    margin-right: 10px;
+}
+
+.textBlock {
+    flex: 1;
+}
+
+.mainText {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.subText {
+    font-size: 16px;
+    color: #666; /* Szary kolor dla podtekstu */
+}
+
+.verifyButton {
+    padding: 5px 15px;
+    border: 2px solid #5296cc; /* Zielony obramowanie */
+    border-radius: 50px;
+    color: black; /* Zielony kolor tekstu */
+    font-size: 14px;
+    font-weight: bold;
+    background: none;
+    cursor: pointer;
+}
+.verifyButton:hover{
+    background-color: #a6d3ef;
+}
+.site{
+    height: 100vh;
+    z-index: -1;
+    background-color: #f8f3f3;
+}

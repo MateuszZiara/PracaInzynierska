@@ -21,6 +21,7 @@
     position: sticky;
     top: 0;
     z-index: 999;
+    user-select: none;
 }
 .it{
     color: rebeccapurple;
@@ -81,6 +82,9 @@
     transition: transform 0.3s ease;
     min-height: 80px;
     max-height: 80px;
+}
+.avatarInitials{
+    margin-left: 10px;
 }
 @media (max-width: 1105px) { 
     .logo{

@@ -45,6 +45,11 @@ public class AspNetUsers : IdentityUser
             user.Email,
             user.BirthDay);
     }
+
+    public virtual AspNetUsersResponseDTO ToResponse()
+    {
+        return new AspNetUsersResponseDTO(FirstName, LastName, BirthDate, UserRank);
+    }
     public virtual string? FirstName { get; set; }
     public virtual string? LastName { get; set; }
     public virtual UserRank UserRank { get; set; }
