@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.ComponentModel;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate;
 using PracaInzynierska_RentIt.Server.Models.Application;
@@ -30,6 +31,43 @@ public class AspNetUsersRepository : IAspNetUsersRepository
     {
         throw new NotImplementedException();
     }
+
+    public AspNetUsers Edit(AspNetUsersEditDTO newEntity)
+    {
+        using (var session = NHibernateHelper.OpenSession())
+        {
+            using (var transaction = session.BeginTransaction())
+            {
+                var old = session.Query<AspNetUsers>().FirstOrDefault(x => x.Id == newEntity.Id);
+                if (old == null)
+                {
+                    throw new Exception("Internal error while trying to edit your account");
+                }
+                return old;
+            }
+        }
+    }
+
+    public bool UpdateUser(AspNetUsers user)
+    {
+        using (var session = NHibernateHelper.OpenSession())
+        {
+            using (var transaction = session.BeginTransaction())
+            {
+                try
+                {
+                    session.SaveOrUpdate(user);
+                    transaction.Commit();
+                    session.Close();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+    }
     public bool CheckEmail(string email)
     {
         var user = NHibernateHelper.OpenSession().Query<AspNetUsers>().Where(x => x.Email == email).ToList();
@@ -55,7 +93,7 @@ public class AspNetUsersRepository : IAspNetUsersRepository
             }
         }
     }
-    public async Task<AspNetUsersResponseDTO> GetUserInfo()
+    public AspNetUsers GetUserInfo()
     {
         var user = _httpContextAccessor.HttpContext?.User;
         if (user?.Identity != null && user.Identity.IsAuthenticated)
@@ -76,7 +114,8 @@ public class AspNetUsersRepository : IAspNetUsersRepository
                 {
                     throw new ObjectNotFoundException(userEntity, "Can't find user");
                 }
-                return userEntity.ToResponse();
+
+                return userEntity;
             }
         }
         throw new UnauthorizedAccessException();

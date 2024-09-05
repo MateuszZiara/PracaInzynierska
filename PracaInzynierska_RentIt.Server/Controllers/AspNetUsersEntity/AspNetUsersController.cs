@@ -35,9 +35,11 @@ public class AspNetUsersController : ControllerBase
                 Response.Cookies.Delete(cookie);
             }
         }
-            
         return Ok("Identity cookies deleted successfully.");
     }
+
+    [HttpPost("Edit")]
+    public bool Edit([FromBody] AspNetUsersEditDTO edit) => _aspNetUsersServices.Edit(edit);
 }
 
 

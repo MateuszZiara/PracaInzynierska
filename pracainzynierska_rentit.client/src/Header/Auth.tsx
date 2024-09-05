@@ -1,11 +1,11 @@
 ﻿import React, { useEffect, useRef, useState } from "react";
 import styles from './Auth.module.css';
-import { Button, TextInput, Loader, PasswordInput } from "@mantine/core";
-// @ts-ignore
+import {Button, TextInput, Loader, PasswordInput, Autocomplete, MultiSelect} from "@mantine/core";
+import axios from 'axios';
 import { LoginSocialFacebook, LoginSocialGoogle } from 'reactjs-social-login';
 import { FacebookLoginButton, GoogleLoginButton } from "react-social-login-buttons";
 import { DateInput } from 'rsuite';
-import 'rsuite/dist/rsuite.min.css'; // Import RSuite CSS for DateInput styling
+import 'rsuite/dist/rsuite.min.css';
 
 interface AuthModalProps {
     onClose: () => void;
@@ -25,11 +25,40 @@ export function AuthModal({ onClose }: AuthModalProps) {
     const [firstnameError, setFirstnameError] = useState<string | null>(null);
     const [lastnameError, setLastnameError] = useState<string | null>(null);
     const [birthDateError, setBirthDateError] = useState<string | null>(null);
+    const [localizations, setLocalizations] = useState<string[]>([]);
+    const [localizationsSelected, setLocalizationsSelected] = useState<string[]>([]);
+    const [localizationError, setLocalizationError] = useState<string | null>(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    
+    
+    useEffect(() => {
+        const fetchLocalizations = async () => {
+            try {
+                const url = `https://secure.geonames.org/searchJSON?username=rentit&country=pl&featureClass=P&maxRows=1000`;
+                const response = await axios.get(url);
+                const cityNames = Array.from(new Set(
+                    response.data.geonames
+                        .filter((item: any) => item.countryCode === 'PL') // Ensure results are from Poland
+                        .map((item: any) => item.name) // Extract city names
+                ));
+                setLocalizations(cityNames);
+            } catch (error) {
+                console.error('Error fetching localizations:', error);
+                setLocalizationError('An error occurred while fetching localizations.');
+            }
+        };
+
+        fetchLocalizations();
+    }, []);
+
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-                onClose();
+                console.log(isDropdownOpen)
+                if (!isDropdownOpen) {
+                    onClose();
+                }
             }
         };
 
@@ -88,9 +117,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
         setFirstnameError(null);
         setLastnameError(null);
         setBirthDateError(null);
+        setLocalizationError(null);
         let hasError = false;
 
-        // Calculate age
         if (birthValue) {
             const today = new Date();
             const birthDate = new Date(birthValue);
@@ -125,6 +154,11 @@ export function AuthModal({ onClose }: AuthModalProps) {
             hasError = true;
         }
 
+        if (localizationsSelected.length === 0) {
+            setLocalizationError("Musisz wybrać przynajmniej jedną lokalizację.");
+            hasError = true;
+        }
+
         if (hasError) {
             setLoading(false);
             return;
@@ -137,6 +171,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 FirstName: firstname,
                 LastName: lastname,
                 BirthDate: birthValue,
+                Lokalizacja: localizationsSelected.join(', '), // Combine selected localizations into a single string
                 Provider: "Website"
             };
             const response = await fetch("api/AspNetUsers/Register", {
@@ -156,8 +191,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
             setLoading(false);
         }
     };
-    const handleLoginClick = async () => 
-    {
+
+    const handleLoginClick = async () => {
         const loginData = {
             Email: email,
             Password: password,
@@ -177,6 +212,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
             window.location.reload();
         }
     }
+
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent} ref={modalRef}>
@@ -213,18 +249,45 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                         Zaloguj się
                                     </Button>
                                 </div>
+                                <div className={styles.divider}>
+                                    <span>lub</span>
+                                </div>
+                                <div className={styles['login-social']}>
+                                    <LoginSocialFacebook
+                                        appId="310778082068786"
+                                        onReject={(error) => {
+                                            console.log(error);
+                                        }}
+                                        onResolve={async (response) => {
+                                        }}
+                                    >
+                                        <FacebookLoginButton />
+                                    </LoginSocialFacebook>
+                                    <div className={styles.google}>
+                                        <LoginSocialGoogle
+                                            appId="310778082068786"
+                                            onReject={(error) => {
+                                                console.log(error);
+                                            }}
+                                            onResolve={async (response) => {
+                                            }}
+                                        >
+                                            <GoogleLoginButton />
+                                        </LoginSocialGoogle>
+                                    </div>
+                                </div>
                             </>
                         ) : (
                             <>
                                 <div className={styles.header}>
-                                    <p className={styles.headerText}>Zarejestruj się</p>
+                                    <p className={styles.headerText}>Rejestracja</p>
                                 </div>
                                 <div className={styles.email}>
                                     <TextInput
-                                        label="Imię"
                                         size="lg"
                                         radius="md"
                                         placeholder="Imię"
+                                        label="Imię"
                                         value={firstname}
                                         onChange={(event) => setFirstname(event.currentTarget.value)}
                                         error={firstnameError}
@@ -232,10 +295,10 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                 </div>
                                 <div className={styles.email}>
                                     <TextInput
-                                        label="Nazwisko"
                                         size="lg"
                                         radius="md"
                                         placeholder="Nazwisko"
+                                        label="Nazwisko"
                                         value={lastname}
                                         onChange={(event) => setLastname(event.currentTarget.value)}
                                         error={lastnameError}
@@ -252,7 +315,25 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                     <span className={styles.info}>
                                         {birthDateError && <p className={styles.error}>Aby się zarejestrować musisz mieć ukończone 18 lat. Zgadzasz się na udostępnianie twojego wieku innym.</p>}
                                     </span>
-                                    
+                                </div>
+                                <div className={styles.email}>
+                                    <span className={styles.info}>
+                                        Wybierz lokalizacje, które Cię interesują.
+                                    </span>
+                                    <MultiSelect
+                                        label="Your favorite library"
+                                        placeholder="Pick value or enter anything"
+                                        data={localizations} // Update with your actual data
+                                        styles={(theme) => ({
+                                            dropdown: {
+                                                zIndex: 2000,
+                                            },
+                                        })}
+                                        searchable
+                                        onChange={setLocalizationsSelected}
+                                        onDropdownOpen={() => setIsDropdownOpen(true)}
+                                        onDropdownClose={() => setIsDropdownOpen(false)}
+                                    />
                                 </div>
                                 <div className={styles.email}>
                                     <PasswordInput

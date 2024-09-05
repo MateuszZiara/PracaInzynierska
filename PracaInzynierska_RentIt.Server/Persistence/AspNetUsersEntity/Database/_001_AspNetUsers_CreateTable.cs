@@ -33,7 +33,9 @@ public class _001_AspNetUsers_CreateTable : Migration
             .WithColumn(nameof(AspNetUsers.ModifiedBy)).AsString().Nullable()
             .WithColumn(nameof(AspNetUsers.ModifiedTime)).AsDateTime().Nullable()
             .WithColumn(nameof(AspNetUsers.BirthDate)).AsDate().NotNullable()
+            .WithColumn("Lokalizacja").AsString(int.MaxValue).Nullable()
             .WithColumn(nameof(AspNetUsers.UserRank)).AsInt32().Nullable();
+        
     }
     public override void Down()
     {

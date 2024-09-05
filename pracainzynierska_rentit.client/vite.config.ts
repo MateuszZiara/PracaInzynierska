@@ -62,6 +62,14 @@ export default defineConfig({
             '^/api/AspNetUsers/info': {
                 target,
                 secure: false
+            },
+            '^/api/AspNetUsers/logout': {
+                target,
+                secure: false
+            },
+            '^/api/AspNetUsers/Edit': {
+                target,
+                secure: false
             }
         },
         port: 5173,

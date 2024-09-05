@@ -5,6 +5,7 @@ import { AuthModal } from "./Auth";
 import styles from './Header.module.css';
 import { ProfileDropdown } from "./ProfileDropdown";
 import { BigModal } from "./BigModal";
+import { useLocation } from "react-router-dom";
 
 export function Header() {
     const [isModalOpen, setModalOpen] = useState(false);
@@ -14,6 +15,8 @@ export function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+
+    const location = useLocation();
 
     const profileRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -103,15 +106,16 @@ export function Header() {
     return (
         <div className={styles.header}>
             <FaBars className={styles.hamburger} onClick={handleOpenModalLeft} />
-            <div className={styles.logo}>
+            <div className={styles.logo} onClick={() => window.location.href ="/"}>
                 <span className={styles.rent}>Rent</span>
                 <span className={styles.it}>It</span>
             </div>
             <div className={styles.navigation}>
-                <span className={styles.active}>Główna</span>
-                <span className={styles.unactive}>Mieszkania</span>
-                <span className={styles.unactive}>Osoby</span>
-                <span className={styles.unactive}>SwipeIt!</span>
+                <span className={location.pathname === "/" ? styles.active : styles.unactive} onClick={() => window.location.href = "/"}>Główna</span>
+                <span className={location.pathname === "/mieszkania" ? styles.active : styles.unactive} onClick={() => window.location.href = "/mieszkania"}>Mieszkania</span>
+                <span className={location.pathname === "/osoby" ? styles.active : styles.unactive} onClick={() => window.location.href = "/osoby"}>Osoby</span>
+                <span className={location.pathname === "/swipeit" ? styles.active : styles.unactive} onClick={() => window.location.href = "/swipeit"}>SwipeIt!</span>
+                
             </div>
             <div className={styles.profile} onClick={toggleDropdown} ref={profileRef}>
                 <FaBars className={styles.hamburgerProfile} />

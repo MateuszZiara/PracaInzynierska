@@ -10,6 +10,11 @@ interface ProfileDropdownProps {
     isLoggedIn: boolean; 
 }
 
+async function logout()
+{
+    await fetch('/api/AspNetUsers/logout');
+    window.location.reload();
+}
 export const ProfileDropdown = forwardRef<HTMLDivElement, ProfileDropdownProps>(
     ({ position, onOpenModal, isLoggedIn }, ref) => {
         return (
@@ -22,7 +27,7 @@ export const ProfileDropdown = forwardRef<HTMLDivElement, ProfileDropdownProps>(
                             <li className={styles.menuItem}>Dodaj swoje ogłoszenie</li>
                             <li className={styles.menuItem}>Twój test osobowości</li>
                             <li className={styles.menuItem}>Centrum pomocy</li>
-                            <li className={styles.menuItem}>Wyloguj się</li>
+                            <li className={styles.menuItem} onClick={logout}>Wyloguj się</li>
                         </>
                     ) : (
                         <>

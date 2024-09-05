@@ -18,29 +18,36 @@
     border-radius: 8px;
     width: 560px;
     max-width: 90%;
+    position: relative; /* Ensure relative positioning for child elements */
 }
-.headerText{
+
+.headerText {
     font-size: 18px;
 }
-.header{
+
+.header {
     display: flex;
     justify-content: center;
     width: 100%;
     align-items: center;
 }
-.email{
+
+.email {
     margin-top: 25px;
 }
-.next{
+
+.next {
     margin-top: 15px;
-}.divider {
-     display: flex;
-     align-items: center;
-     text-align: center;
-     margin: 2rem 0;
-     margin-left: 4.25rem;
-     width: 75%;
- }
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 2rem 0;
+    margin-left: 4.25rem;
+    width: 75%;
+}
 
 .divider::before,
 .divider::after {
@@ -61,13 +68,16 @@
     color: #661597;
     font-size: 14px;
 }
-.google{
+
+.google {
     margin-top: 25px;
 }
-.info{
+
+.info {
     font-size: 12px;
-    color: rgba(0,0,0,0.5);
+    color: rgba(0, 0, 0, 0.5);
 }
-.error{
-    color:red;
+
+.error {
+    color: red;
 }

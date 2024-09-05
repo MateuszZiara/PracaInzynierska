@@ -1,61 +1,106 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import styles from './settings.module.css';
-import {FaUser, FaLock, FaEye, FaCreditCard, FaChevronDown, FaChevronUp, FaCheckCircle} from 'react-icons/fa';
-import {Header} from "../Header/Header.tsx";
-
+import { FaUser, FaLock, FaEye, FaCreditCard, FaChevronDown, FaChevronUp, FaCheckCircle } from 'react-icons/fa';
+import { Header } from "../Header/Header.tsx";
 type BlockState = {
     daneOsobowe: boolean;
     logowanie: boolean;
     widoczność: boolean;
     danePłatnicze: boolean;
 };
-
 export default function Settings() {
+    const [isEmailConfirmed, setIsEmailConfirmed] = useState(false);
     const [expandedBlocks, setExpandedBlocks] = useState<BlockState>({
         daneOsobowe: false,
         logowanie: false,
         widoczność: false,
         danePłatnicze: false
     });
-
+    const [emailSent, setEmailSent] = useState(false); // New state for email verification status
     // State for the user inputs
     const [formData, setFormData] = useState({
-        imie: '',
-        nazwisko: '',
-        email: '',
-        dataUrodzenia: '',
-        telefonKomorkowy: '',
-        newPassword: '',
-        confirmPassword: '',
-        profileVisibility: 'Public',
-        creditCardNumber: '',
-        expiryDate: '',
-        cvv: ''
+        FirstName: '',
+        LastName: '',
+        Email: '',
+        BirthDay: '',
+        PhoneNumber: '',
+        Password: '',
     });
-
-    // Handle input changes
+    const [confirmPassword, setConfirmPassword] = useState('');
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value
-        }));
+        if (name === 'confirmPassword') {
+            setConfirmPassword(value);
+        } else {
+            setFormData(prevState => ({
+                ...prevState,
+                [name]: value
+            }));
+        }
     };
-
-    // Toggle function for expanding and collapsing blocks
     const handleToggle = (block: keyof BlockState) => {
         setExpandedBlocks(prevState => ({
             ...prevState,
             [block]: !prevState[block]
         }));
     };
-
-    // Save changes handler
-    const handleSaveChanges = () => {
-        // Handle save logic here
-        alert('Changes saved!');
+    const handleEmailVerification = () => {
+        setEmailSent(true);
     };
+    const handleSaveChanges = async () => {
+        const nonEmptyFields = Object.entries(formData).filter(([key, value]) => value !== '');
 
+        if (nonEmptyFields.length > 0) {
+            if (formData.Password !== confirmPassword) {
+                alert('Passwords do not match!');
+                return;
+            }
+            nonEmptyFields.forEach(([key, value]) => {
+                console.log(`${key}: ${value}`);
+            });
+            const fieldsToSend = Object.fromEntries(nonEmptyFields);
+            try {
+                const response = await fetch("https://localhost:7214/api/AspNetUsers/Edit", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(fieldsToSend),
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    console.log("Changes saved successfully.");
+                    window.location.reload();
+                } else {
+                    console.error("Failed to save changes.");
+                }
+            } catch (error) {
+                console.error("Error during saving:", error);
+            }
+        } else {
+            console.log("No changes to save.");
+        }
+    };
+    useEffect(() => {
+        const checkEmailConfirmed = async () => {
+            try {
+                const response = await fetch("api/AspNetUsers/info", {
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    setIsEmailConfirmed(data.emailConfirmed);
+                } else {
+                    window.location.href = "/";
+                }
+            } catch (error) {
+                console.error("Error checking login status:", error);
+            }
+        };
+        checkEmailConfirmed();
+        
+    }, []);
     return (
         <div className={styles.site}>
             {Header()}
@@ -63,15 +108,38 @@ export default function Settings() {
                 <div className={styles.verifyBlock}>
                     <FaCheckCircle className={styles.verification}/>
                     <div className={styles.textBlock}>
-                        <div className={styles.mainText}>Zweryfikuj swój email</div>
-                        <div className={styles.subText}>Zweryfikuj swój email, aby móc korzystać w pełni z naszej
-                            strony
-                        </div>
+                        {isEmailConfirmed ? (
+                            <>
+                                <div className={styles.mainText}>Twój Email jest potwierdzony</div>
+                                <div className={styles.subText}>Twoje konto zostało zweryfikowane i zatwierdzone. Możesz
+                                    korzystać ze wszystkich możliwości na stronie.
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                {emailSent ? (
+                                    <>
+                                        <div className={styles.mainText}>Email został wysłany</div>
+                                        <div className={styles.subText}>Sprawdź swoją skrzynkę odbiorczą</div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <div className={styles.mainText}>Zweryfikuj swój email</div>
+                                        <div className={styles.subText}>Zweryfikuj swój email, aby móc korzystać w pełni
+                                            z naszej strony
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )}
                     </div>
-                    <button className={styles.verifyButton}>Zweryfikuj konto</button>
+                    {!emailSent && !isEmailConfirmed && (
+                        <button className={styles.verifyButton} onClick={handleEmailVerification}>
+                            Zweryfikuj konto
+                        </button>
+                    )}
                 </div>
-
-
+                {/* Dane osobowe */}
                 <div className={styles.block} onClick={() => handleToggle('daneOsobowe')}>
                     <FaUser className={styles.icon}/>
                     Dane osobowe
@@ -79,18 +147,17 @@ export default function Settings() {
                         <FaChevronDown className={styles.toggleIcon}/>}
                 </div>
 
-                <div
-                    className={`${styles.expandedContent} ${expandedBlocks.daneOsobowe ? styles.expanded : ''}`}
-                >
+                <div className={`${styles.expandedContent} ${expandedBlocks.daneOsobowe ? styles.expanded : ''}`}>
                     <div className={styles.subBlock}>
                         <label>
                             Imie
                             <input
                                 type="text"
-                                name="imie"
-                                value={formData.imie}
+                                name="FirstName"
+                                value={formData.FirstName}
                                 onChange={handleChange}
                                 className={styles.input}
+                                placeholder="test"
                             />
                         </label>
                     </div>
@@ -99,8 +166,8 @@ export default function Settings() {
                             Nazwisko
                             <input
                                 type="text"
-                                name="nazwisko"
-                                value={formData.nazwisko}
+                                name="LastName"
+                                value={formData.LastName}
                                 onChange={handleChange}
                                 className={styles.input}
                             />
@@ -111,8 +178,8 @@ export default function Settings() {
                             Email
                             <input
                                 type="email"
-                                name="email"
-                                value={formData.email}
+                                name="Email"
+                                value={formData.Email}
                                 onChange={handleChange}
                                 className={styles.input}
                             />
@@ -123,8 +190,8 @@ export default function Settings() {
                             Data urodzenia
                             <input
                                 type="date"
-                                name="dataUrodzenia"
-                                value={formData.dataUrodzenia}
+                                name="BirthDay"
+                                value={formData.BirthDay}
                                 onChange={handleChange}
                                 className={styles.input}
                             />
@@ -135,16 +202,16 @@ export default function Settings() {
                             Telefon komórkowy
                             <input
                                 type="tel"
-                                name="telefonKomorkowy"
-                                value={formData.telefonKomorkowy}
+                                name="PhoneNumber"
+                                value={formData.PhoneNumber}
                                 onChange={handleChange}
                                 className={styles.input}
                             />
                         </label>
                     </div>
-                    <button className={styles.saveButton} onClick={handleSaveChanges}>Zapisz zmiany</button>
                 </div>
 
+                {/* Logowanie */}
                 <div className={styles.block} onClick={() => handleToggle('logowanie')}>
                     <FaLock className={styles.icon}/>
                     Logowanie
@@ -152,16 +219,14 @@ export default function Settings() {
                         <FaChevronDown className={styles.toggleIcon}/>}
                 </div>
 
-                <div
-                    className={`${styles.expandedContent} ${expandedBlocks.logowanie ? styles.expanded : ''}`}
-                >
+                <div className={`${styles.expandedContent} ${expandedBlocks.logowanie ? styles.expanded : ''}`}>
                     <div className={styles.subBlock}>
                         <label>
                             New Password
                             <input
                                 type="password"
-                                name="newPassword"
-                                value={formData.newPassword}
+                                name="Password"
+                                value={formData.Password}
                                 onChange={handleChange}
                                 className={styles.input}
                             />
@@ -173,15 +238,15 @@ export default function Settings() {
                             <input
                                 type="password"
                                 name="confirmPassword"
-                                value={formData.confirmPassword}
+                                value={confirmPassword}
                                 onChange={handleChange}
                                 className={styles.input}
                             />
                         </label>
                     </div>
-                    <button className={styles.saveButton} onClick={handleSaveChanges}>Zapisz zmiany</button>
                 </div>
 
+                {/* Widoczność */}
                 <div className={styles.block} onClick={() => handleToggle('widoczność')}>
                     <FaEye className={styles.icon}/>
                     Widoczność
@@ -189,27 +254,15 @@ export default function Settings() {
                         <FaChevronDown className={styles.toggleIcon}/>}
                 </div>
 
-                <div
-                    className={`${styles.expandedContent} ${expandedBlocks.widoczność ? styles.expanded : ''}`}
-                >
+                <div className={`${styles.expandedContent} ${expandedBlocks.widoczność ? styles.expanded : ''}`}>
                     <div className={styles.subBlock}>
                         <label>
-                            Profile Visibility
-                            <select
-                                name="profileVisibility"
-                                value={formData.profileVisibility}
-                                onChange={handleChange}
-                                className={styles.input}
-                            >
-                                <option value="Public">Public</option>
-                                <option value="Friends">Friends</option>
-                                <option value="Private">Private</option>
-                            </select>
+                            {/* Content for visibility section */}
                         </label>
                     </div>
-                    <button className={styles.saveButton} onClick={handleSaveChanges}>Zapisz zmiany</button>
                 </div>
 
+                {/* Dane płatnicze */}
                 <div className={styles.block} onClick={() => handleToggle('danePłatnicze')}>
                     <FaCreditCard className={styles.icon}/>
                     Dane płatnicze
@@ -217,9 +270,7 @@ export default function Settings() {
                         <FaChevronDown className={styles.toggleIcon}/>}
                 </div>
 
-                <div
-                    className={`${styles.expandedContent} ${expandedBlocks.danePłatnicze ? styles.expanded : ''}`}
-                >
+                <div className={`${styles.expandedContent} ${expandedBlocks.danePłatnicze ? styles.expanded : ''}`}>
                     <div className={styles.subBlock}>
                         <label>
                             Credit Card Number
@@ -257,8 +308,8 @@ export default function Settings() {
                             />
                         </label>
                     </div>
-                    <button className={styles.saveButton} onClick={handleSaveChanges}>Zapisz zmiany</button>
                 </div>
+                <button className={styles.saveButton} onClick={handleSaveChanges}>Zapisz zmiany</button>
             </div>
         </div>
     );

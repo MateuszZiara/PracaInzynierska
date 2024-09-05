@@ -19,6 +19,10 @@ public class AspNetUsersMapping : ClassMap<AspNetUsers>
         Map(x => x.CreateTime);
         Map(x => x.ModifiedTime);
         Map(x => x.BirthDate);
+        Map(x => x.Lokalizacja)
+            .CustomType("StringClob")
+            .Nullable()
+            .CustomSqlType("nvarchar(max)");
         //Identity
         Map(x => x.UserName);
         Map(x => x.NormalizedUserName);

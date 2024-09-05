@@ -17,6 +17,7 @@ public class AspNetUsers : IdentityUser
         CreateTime = DateTime.Now;
         UserRank = UserRank.User;
         CreateBy = "Admin";
+        Lokalizacja = new List<string>();
     }
 
     public AspNetUsers(string firstName, string lastName, string provider, string password, string email, DateTime birthDate)
@@ -35,6 +36,8 @@ public class AspNetUsers : IdentityUser
         CreateBy = provider;
     }
 
+    
+
     public virtual AspNetUsers ToEntity(AspNetUsersRegisterDto user)
     {
         return new AspNetUsers(
@@ -48,13 +51,14 @@ public class AspNetUsers : IdentityUser
 
     public virtual AspNetUsersResponseDTO ToResponse()
     {
-        return new AspNetUsersResponseDTO(FirstName, LastName, BirthDate, UserRank);
+        return new AspNetUsersResponseDTO(FirstName, LastName, BirthDate, UserRank, EmailConfirmed, Lokalizacja);
     }
     public virtual string? FirstName { get; set; }
     public virtual string? LastName { get; set; }
     public virtual UserRank UserRank { get; set; }
     public virtual string? Provider { get; set; }
     public virtual string? Name { get; set; } 
+    public virtual List<String> Lokalizacja { get; set; } 
     public virtual bool? Avatar {get; set; }
     public virtual DateTime? ModifiedTime { get; set; }
     public virtual String? ModifiedBy { get; set; }

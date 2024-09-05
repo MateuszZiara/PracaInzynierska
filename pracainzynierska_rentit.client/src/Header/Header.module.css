@@ -9,7 +9,6 @@
     url('../Fonts/Montserrat-SemiBold.ttf') format("truetype");
 }
 .header{
-    width: 100vw;
     min-height: 80px;
     max-height: 80px;
     display: flex;
@@ -28,6 +27,7 @@
 }
 .logo{
     font-size: 1.5rem;
+    cursor: pointer;
 }
 .navigation{
     display: flex;
