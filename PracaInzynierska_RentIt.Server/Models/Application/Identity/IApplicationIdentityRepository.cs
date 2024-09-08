@@ -1,13 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
 
 namespace PracaInzynierska_RentIt.Server.Models.Application;
 
-public interface IApplicationRepository<T,TD> where T : ApplicationEntity
+public interface IApplicationIdentityRepository<T> where T : IdentityUser
 {
     public List<T> GetAll() => NHibernateHelper.OpenSession().Query<T>().ToList();
-    public ActionResult<T> GetById(Guid id) => NHibernateHelper.OpenSession().Query<T>().FirstOrDefault(x => x.Id == id) ?? throw new InvalidOperationException();
+    public ActionResult<T> GetById(Guid id) => NHibernateHelper.OpenSession().Query<T>().FirstOrDefault(x => x.Id == id.ToString()) ?? throw new InvalidOperationException();
 
     public ActionResult<T> Create(T t)
     {
@@ -31,7 +32,7 @@ public interface IApplicationRepository<T,TD> where T : ApplicationEntity
             {
                 try
                 {
-                    var entity = session.Query<T>().Where(x => x.Id == id);
+                    var entity = session.Query<T>().Where(x => x.Id == id.ToString());
                     session.Delete(entity);
                     transaction.Commit();
                     session.Close();

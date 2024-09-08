@@ -15,10 +15,6 @@ public class AspNetUsersRepository : IAspNetUsersRepository
     {
         _httpContextAccessor = httpContextAccessor;
     }
-    public List<AspNetUsers> GetAll()
-    {
-        throw new NotImplementedException();
-    }
     public ActionResult<AspNetUsers> GetById(Guid id)
     {
         throw new NotImplementedException();

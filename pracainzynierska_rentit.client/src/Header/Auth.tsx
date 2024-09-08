@@ -28,8 +28,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
     const [localizations, setLocalizations] = useState<string[]>([]);
     const [localizationsSelected, setLocalizationsSelected] = useState<string[]>([]);
     const [localizationError, setLocalizationError] = useState<string | null>(null);
-    const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-    
+    const dropdownOpenRef = useRef<boolean>(false);
     
     useEffect(() => {
         const fetchLocalizations = async () => {
@@ -55,8 +54,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
-                console.log(isDropdownOpen)
-                if (!isDropdownOpen) {
+                if (!dropdownOpenRef.current) {
                     onClose();
                 }
             }
@@ -81,7 +79,12 @@ export function AuthModal({ onClose }: AuthModalProps) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
-
+    const logLocalizationsSelected = () => {
+        localizationsSelected.forEach(localization => {
+            let localizationCurrent = localization;
+            console.log(localizationCurrent);
+        });
+    };
     const validatePassword = (password: string): boolean => {
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
         return passwordRegex.test(password);
@@ -171,7 +174,6 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 FirstName: firstname,
                 LastName: lastname,
                 BirthDate: birthValue,
-                Lokalizacja: localizationsSelected.join(', '), // Combine selected localizations into a single string
                 Provider: "Website"
             };
             const response = await fetch("api/AspNetUsers/Register", {
@@ -212,6 +214,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
             window.location.reload();
         }
     }
+    
 
     return (
         <div className={styles.modalOverlay}>
@@ -327,8 +330,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                         })}
                                         searchable
                                         onChange={setLocalizationsSelected}
-                                        onDropdownOpen={() => {setIsDropdownOpen(true); console.log(isDropdownOpen); setIsDropdownOpen(true); console.log(isDropdownOpen);}}
-                                        onDropdownClose={() => {setIsDropdownOpen(false)}}
+                                        onDropdownOpen={() => {dropdownOpenRef.current = true;}}
+                                        onDropdownClose={() => {dropdownOpenRef.current = false;}}
                                         size="lg"
                                     />
                                     <span className={styles.info}>
@@ -350,9 +353,6 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                     </span>
                                 </div>
                                 <div className={styles.email}>
-                                    <span className={styles.info}>
-                                        Klikając zarejestruj wyrażasz zgodę na przetwarzanie twoich danych osobowych.
-                                    </span>
                                 </div>
                                 <div className={styles.next}>
                                     <Button
@@ -364,6 +364,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                     >
                                         Zarejestruj się
                                     </Button>
+                                    <span className={styles.info}>
+                                        Klikając zarejestruj wyrażasz zgodę na przetwarzanie twoich danych osobowych.
+                                    </span>
                                 </div>
                             </>
                         )}

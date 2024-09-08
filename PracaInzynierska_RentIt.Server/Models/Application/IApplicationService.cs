@@ -4,11 +4,11 @@ using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
 
 namespace PracaInzynierska_RentIt.Server.Models.Application;
 
-public interface IApplicationService<T>
+public interface IApplicationService<T, TD, TR> where TR : IApplicationRepository<T,TD> where T : ApplicationEntity
 {
-    public List<T> GetAll();
-    public ActionResult<T> GetById(Guid id);
-    public ActionResult<T> Create(T t);
-    public bool Delete(Guid id);
-    public bool Edit(AspNetUsersEditDTO newEntity);
+    TR Repository { get; }
+    public List<T> GetAll() => Repository.GetAll();
+    public ActionResult<T> GetById(Guid id) => Repository.GetById(id);
+    public ActionResult<T> Create(T t) => Repository.Create(t);
+    public bool Delete(Guid id) => Repository.Delete(id);
 }

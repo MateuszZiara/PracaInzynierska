@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PracaInzynierska_RentIt.Server.Models.Application;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
 using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
@@ -6,10 +7,10 @@ using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 namespace PracaInzynierska_RentIt.Server.Controllers.AspNetUsersEntity;
 [Route("api/[controller]")]
 [ApiController]
-public class AspNetUsersController : ControllerBase
+public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, AspNetUsersService, AspNetUsersRepository>
 {
-    private readonly AspNetUsersService _aspNetUsersServices;
-    public AspNetUsersController(AspNetUsersService aspNetUsersServices)
+    private readonly IAspNetUsersService _aspNetUsersServices;
+    public AspNetUsersController(AspNetUsersService aspNetUsersServices) : base(aspNetUsersServices)
     {
         _aspNetUsersServices = aspNetUsersServices;
     }
@@ -37,9 +38,10 @@ public class AspNetUsersController : ControllerBase
         }
         return Ok("Identity cookies deleted successfully.");
     }
-
+    
     [HttpPost("Edit")]
     public bool Edit([FromBody] AspNetUsersEditDTO edit) => _aspNetUsersServices.Edit(edit);
+    
 }
 
 
