@@ -39,27 +39,17 @@ export function Home()
             });
         };
     }, []);
-
     useEffect(() => {
         const image = images[currentSection] || './Section1-Photo.jpg';
         console.log('Current Section:', currentSection);
         console.log('Background Image:', image);
         setBackgroundImage(image);
     }, [currentSection]);
-
-
-
-
-   /* const toggleMessages = () => {
-        setMessagesOpen((prev) => !prev);
-    };*/
-
     const scrollToSection1 = () => {
         if (sectionsRef.current[1]) {
             sectionsRef.current[1].scrollIntoView({ behavior: 'smooth' });
         }
     };
-
     const sections = [
         { id: "section1", label: "Ogłoszenia" },
         { id: "section2", label: "Test osobowości" },

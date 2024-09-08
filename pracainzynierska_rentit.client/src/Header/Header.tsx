@@ -111,7 +111,7 @@ export function Header() {
                 <span className={styles.it}>It</span>
             </div>
             <div className={styles.navigation}>
-                <span className={location.pathname === "/" ? styles.active : styles.unactive} onClick={() => window.location.href = "/"}>Główna</span>
+                <span className={location.pathname === "/"  ? styles.active : styles.unactive} onClick={() => window.location.href = "/"}>Główna</span>
                 <span className={location.pathname === "/mieszkania" ? styles.active : styles.unactive} onClick={() => window.location.href = "/mieszkania"}>Mieszkania</span>
                 <span className={location.pathname === "/osoby" ? styles.active : styles.unactive} onClick={() => window.location.href = "/osoby"}>Osoby</span>
                 <span className={location.pathname === "/swipeit" ? styles.active : styles.unactive} onClick={() => window.location.href = "/swipeit"}>SwipeIt!</span>

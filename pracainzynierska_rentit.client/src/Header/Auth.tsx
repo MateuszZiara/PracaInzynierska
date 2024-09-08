@@ -317,12 +317,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                     </span>
                                 </div>
                                 <div className={styles.email}>
-                                    <span className={styles.info}>
-                                        Wybierz lokalizacje, które Cię interesują.
-                                    </span>
                                     <MultiSelect
-                                        label="Your favorite library"
-                                        placeholder="Pick value or enter anything"
+                                        label="Wybierz lokalizacje"
                                         data={localizations} // Update with your actual data
                                         styles={(theme) => ({
                                             dropdown: {
@@ -331,9 +327,13 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                         })}
                                         searchable
                                         onChange={setLocalizationsSelected}
-                                        onDropdownOpen={() => setIsDropdownOpen(true)}
-                                        onDropdownClose={() => setIsDropdownOpen(false)}
+                                        onDropdownOpen={() => {setIsDropdownOpen(true); console.log(isDropdownOpen); setIsDropdownOpen(true); console.log(isDropdownOpen);}}
+                                        onDropdownClose={() => {setIsDropdownOpen(false)}}
+                                        size="lg"
                                     />
+                                    <span className={styles.info}>
+                                        Wybierz lokalizacje, do których chcesz się przeprowadzić. Spokojnie później możesz to zmienić w ustawieniach!
+                                    </span>
                                 </div>
                                 <div className={styles.email}>
                                     <PasswordInput
