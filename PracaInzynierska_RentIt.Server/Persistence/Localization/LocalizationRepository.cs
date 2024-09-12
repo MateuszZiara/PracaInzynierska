@@ -7,7 +7,12 @@ namespace PracaInzynierska_RentIt.Server.Persistence.Localization;
 
 public class LocalizationRepository : ILocalizationRepository
 {
-    
+    public LocalizationEntity ConvertToDto(LocalizationEntity? entity)
+    {
+        if (entity != null) return entity;
+        throw new NullReferenceException();
+    }
+
     public ActionResult<LocalizationEntity> GetById(Guid id)
     {
         throw new NotImplementedException();

@@ -33,12 +33,10 @@ export function AuthModal({ onClose }: AuthModalProps) {
     useEffect(() => {
         const fetchLocalizations = async () => {
             try {
-                const url = `https://secure.geonames.org/searchJSON?username=rentit&country=pl&featureClass=P&maxRows=1000`;
+                const url = `https://localhost:7214/api/Localization/GetAll`;
                 const response = await axios.get(url);
                 const cityNames = Array.from(new Set(
-                    response.data.geonames
-                        .filter((item: any) => item.countryCode === 'PL') // Ensure results are from Poland
-                        .map((item: any) => item.name) // Extract city names
+                    response.data.map((item) => `${item.name}, ${item.province}`)
                 ));
                 setLocalizations(cityNames);
             } catch (error) {
@@ -46,6 +44,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 setLocalizationError('An error occurred while fetching localizations.');
             }
         };
+
+
 
         fetchLocalizations();
     }, []);

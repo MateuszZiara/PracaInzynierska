@@ -4,7 +4,7 @@ using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 
 namespace PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 
-public interface IAspNetUsersService : IApplicationIdentityService<AspNetUsers, AspNetUsersRepository>
+public interface IAspNetUsersService : IApplicationIdentityService<AspNetUsers, AspNetUsersRepository, AspNetUsersResponseDTO>
 {
     
 }

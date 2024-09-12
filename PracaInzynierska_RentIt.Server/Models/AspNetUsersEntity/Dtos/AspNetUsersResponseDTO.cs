@@ -9,13 +9,13 @@ public class AspNetUsersResponseDTO
     {
     }
 
-    public virtual string FirstName { get; set; }
+    public virtual string? FirstName { get; set; }
     public virtual string LastName { get; set; }
     public virtual DateTime BirthDateTime { get; set; }
     public virtual UserRank UserRank { get; set; }
     public virtual bool EmailConfirmed { get; set; }
 
-    public AspNetUsersResponseDTO(string firstName, string lastName, DateTime birthDateTime, UserRank userRank, bool emailConfirmed)
+    public AspNetUsersResponseDTO(string? firstName, string lastName, DateTime birthDateTime, UserRank userRank, bool emailConfirmed)
     {
         FirstName = firstName;
         LastName = lastName;

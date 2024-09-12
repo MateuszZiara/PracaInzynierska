@@ -15,6 +15,20 @@ public class AspNetUsersRepository : IAspNetUsersRepository
     {
         _httpContextAccessor = httpContextAccessor;
     }
+
+
+    public AspNetUsersResponseDTO ConvertToDto(AspNetUsers user)
+    {
+        return new AspNetUsersResponseDTO
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            BirthDateTime = user.BirthDate,
+            UserRank = user.UserRank,
+            EmailConfirmed = user.EmailConfirmed
+        };
+    }
+
     public ActionResult<AspNetUsers> GetById(Guid id)
     {
         throw new NotImplementedException();

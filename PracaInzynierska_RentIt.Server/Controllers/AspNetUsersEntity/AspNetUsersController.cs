@@ -7,7 +7,7 @@ using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 namespace PracaInzynierska_RentIt.Server.Controllers.AspNetUsersEntity;
 [Route("api/[controller]")]
 [ApiController]
-public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, AspNetUsersService, AspNetUsersRepository>
+public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, AspNetUsersService, AspNetUsersRepository, AspNetUsersResponseDTO>
 {
     private readonly IAspNetUsersService _aspNetUsersServices;
     public AspNetUsersController(AspNetUsersService aspNetUsersServices) : base(aspNetUsersServices)

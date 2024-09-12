@@ -13,6 +13,7 @@ public class _004_Localization_CreateTable : Migration
             .WithColumn(nameof(LocalizationEntity.CreateTime)).AsDateTime().Nullable()
             .WithColumn(nameof(LocalizationEntity.ModifiedBy)).AsString().Nullable()
             .WithColumn(nameof(LocalizationEntity.ModifiedTime)).AsDateTime().Nullable()
+            .WithColumn(nameof(LocalizationEntity.Province)).AsString()
             .WithColumn(nameof(LocalizationEntity.Name)).AsString();
             
         InsertDataFromApi().GetAwaiter().GetResult();
@@ -32,12 +33,14 @@ public class _004_Localization_CreateTable : Migration
         foreach (var location in data)
         {
             var name = location["name"].ToString();
+            var province = location["adminName1"].ToString();
             var id = Guid.NewGuid();
 
             Insert.IntoTable(nameof(LocalizationEntity)).Row(new
             {
                 Id = id,
-                Name = name
+                Name = name,
+                Province = province
             });
         }
     }

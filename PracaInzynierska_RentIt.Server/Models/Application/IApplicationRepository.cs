@@ -4,12 +4,26 @@ using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
 
 namespace PracaInzynierska_RentIt.Server.Models.Application;
 
-public interface IApplicationRepository<T,TD> where T : ApplicationEntity
+public interface IApplicationRepository<T, TDto> where T : ApplicationEntity
 {
-    public List<T> GetAll() => NHibernateHelper.OpenSession().Query<T>().ToList();
-    public ActionResult<T> GetById(Guid id) => NHibernateHelper.OpenSession().Query<T>().FirstOrDefault(x => x.Id == id) ?? throw new InvalidOperationException();
+    public TDto ConvertToDto(T? entity);
+    public List<TDto> GetAll()
+    {
+        using (var session = NHibernateHelper.OpenSession())
+        {
+            List<TDto> items = new List<TDto>();
+            foreach (var item in session.Query<T>())
+            {
+                items.Add(ConvertToDto(item));
+            }
 
-    public ActionResult<T> Create(T t)
+            session.Close();
+            return items;
+        }
+    }
+    public ActionResult<TDto> GetById(Guid id) => ConvertToDto(NHibernateHelper.OpenSession().Query<T>().FirstOrDefault(x => x.Id == id)) ?? throw new InvalidOperationException();
+
+    public ActionResult<TDto> Create(T t)
     {
         using (var session = NHibernateHelper.OpenSession())
         {
@@ -18,7 +32,7 @@ public interface IApplicationRepository<T,TD> where T : ApplicationEntity
                 session.SaveOrUpdate(t);
                 transaction.Commit();
                 session.Close();
-                return t;
+                return ConvertToDto(t);
             }
         }
     }

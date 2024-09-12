@@ -34,9 +34,6 @@ public class AspNetUsers : IdentityUser
         BirthDate = birthDate;
         CreateBy = provider;
     }
-
-    
-
     public virtual AspNetUsers ToEntity(AspNetUsersRegisterDto user)
     {
         return new AspNetUsers(
@@ -46,11 +43,6 @@ public class AspNetUsers : IdentityUser
             user.Password,
             user.Email,
             user.BirthDay);
-    }
-
-    public virtual AspNetUsersResponseDTO ToResponse()
-    {
-        return new AspNetUsersResponseDTO(FirstName, LastName, BirthDate, UserRank, EmailConfirmed);
     }
     public virtual string? FirstName { get; set; }
     public virtual string? LastName { get; set; }

@@ -1,17 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace PracaInzynierska_RentIt.Server.Models.Application;
 [Route("api/[controller]")]
 [ApiController]
-public class ApplicationIdentityController<T,TS, TR, TDto> : ControllerBase 
-    where T : IdentityUser
-    where TS : IApplicationIdentityService<T,TR, TDto> where TR : IApplicationIdentityRepository<T ,TDto>
+public class ApplicationController<T,TS, TR, TDto> : ControllerBase
+    where T : ApplicationEntity
+    where TS : IApplicationService<T,TR, TDto> where TR : IApplicationRepository<T ,TDto>
 {
     public virtual TS service { get; }
 
-    public ApplicationIdentityController(TS service)
+    public ApplicationController(TS service)
     {
         this.service = service;
     }
