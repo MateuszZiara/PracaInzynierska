@@ -15,5 +15,6 @@ public class LocalizationEntityMapping : ClassMap<LocalizationEntity>
         Map(x => x.ModifiedTime);
         Map(x => x.CreateBy);
         Map(x => x.CreateTime);
+        Table(_tablename);
     }
 }

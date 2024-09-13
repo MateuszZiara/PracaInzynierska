@@ -14,6 +14,7 @@ interface AuthModalProps {
 export function AuthModal({ onClose }: AuthModalProps) {
     const modalRef = useRef<HTMLDivElement>(null);
     const [email, setEmail] = useState<string>("");
+    const [Id, setId] = useState();
     const [firstname, setFirstname] = useState<string>("");
     const [lastname, setLastname] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -29,15 +30,19 @@ export function AuthModal({ onClose }: AuthModalProps) {
     const [localizationsSelected, setLocalizationsSelected] = useState<string[]>([]);
     const [localizationError, setLocalizationError] = useState<string | null>(null);
     const dropdownOpenRef = useRef<boolean>(false);
-    
+    const [localizationsData, setLocalizationsData] = useState<string[]>([]);
     useEffect(() => {
         const fetchLocalizations = async () => {
             try {
-                const url = `https://localhost:7214/api/Localization/GetAll`;
+                const url = `api/Localization/GetAll`;
                 const response = await axios.get(url);
+                const localizationData = response.data;
+
                 const cityNames = Array.from(new Set(
-                    response.data.map((item) => `${item.name}, ${item.province}`)
+                    localizationData.map((item) => `${item.name}, ${item.province}`)
                 ));
+
+                setLocalizationsData(localizationData); // Store complete data
                 setLocalizations(cityNames);
             } catch (error) {
                 console.error('Error fetching localizations:', error);
@@ -45,10 +50,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
             }
         };
 
-
-
         fetchLocalizations();
     }, []);
+
 
 
     useEffect(() => {
@@ -79,12 +83,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     };
-    const logLocalizationsSelected = () => {
-        localizationsSelected.forEach(localization => {
-            let localizationCurrent = localization;
-            console.log(localizationCurrent);
-        });
-    };
+    
     const validatePassword = (password: string): boolean => {
         const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
         return passwordRegex.test(password);
@@ -166,7 +165,10 @@ export function AuthModal({ onClose }: AuthModalProps) {
             setLoading(false);
             return;
         }
-
+        const selectedIds = localizationsSelected.map((city) => {
+            const localization = localizationsData.find((item) => `${item.name}, ${item.province}` === city);
+            return localization ? localization.id : null;
+        }).filter(id => id !== null); 
         try {
             const registerData = {
                 Email: email,
@@ -183,7 +185,35 @@ export function AuthModal({ onClose }: AuthModalProps) {
             });
 
             if (response.ok) {
-                window.location.reload();
+                const loginData = {
+                    Email: email,
+                    Password: password,
+                };
+                const responseLogin = await fetch("loginCustomWebsite?useCookies=true&useSessionCookies=false", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(loginData),
+                    credentials: 'include'
+                });
+                if (!responseLogin.ok) {
+                    const errorMessage = await responseLogin.text();
+                    setPasswordError("Złe hasło");
+                    throw new Error(`HTTP error! Status: ${responseLogin.status}, Message: ${errorMessage}`);
+                } else {
+                    const registerLocations = {
+                        localizationId: selectedIds
+                    }
+                    const response = await fetch('api/LocalizationUser/CreateMany', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(registerLocations),
+                    });
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        console.error('Error during registration:', await response.text());
+                    }
+                }
             } else {
                 console.error('Error during registration:', await response.text());
             }
@@ -193,13 +223,11 @@ export function AuthModal({ onClose }: AuthModalProps) {
             setLoading(false);
         }
     };
-
     const handleLoginClick = async () => {
         const loginData = {
             Email: email,
             Password: password,
         };
-        console.log(loginData);
         const response = await fetch("loginCustomWebsite?useCookies=true&useSessionCookies=false", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -213,9 +241,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
         } else {
             window.location.reload();
         }
-    }
-    
-
+    }const handleLocalizationChange = (selectedCities) => {
+        setLocalizationsSelected(selectedCities);
+    };
     return (
         <div className={styles.modalOverlay}>
             <div className={styles.modalContent} ref={modalRef}>
@@ -329,9 +357,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                             },
                                         })}
                                         searchable
-                                        onChange={setLocalizationsSelected}
-                                        onDropdownOpen={() => {dropdownOpenRef.current = true;}}
-                                        onDropdownClose={() => {dropdownOpenRef.current = false;}}
+                                        onChange={handleLocalizationChange} // Use the new handler
+                                        onDropdownOpen={() => { dropdownOpenRef.current = true; }}
+                                        onDropdownClose={() => { dropdownOpenRef.current = false; }}
                                         size="lg"
                                     />
                                     <span className={styles.info}>

@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using PracaInzynierska_RentIt.Server.Models.Application.DBContext;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 using PracaInzynierska_RentIt.Server.Models.Localization;
+using PracaInzynierska_RentIt.Server.Models.LocalizationUser;
 using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 using PracaInzynierska_RentIt.Server.Persistence.Localization;
+using PracaInzynierska_RentIt.Server.Persistence.LocalizationUser;
 using RentIt_PracaInzynierska.Server.Models.IdentityLogin;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,10 @@ builder.Services.AddScoped<IAspNetUsersService, AspNetUsersService>();
 builder.Services.AddScoped<LocalizationRepository>();
 builder.Services.AddScoped<LocalizationService>();
 builder.Services.AddScoped<ILocalizationService, LocalizationService>();
+
+builder.Services.AddScoped<LocalizationUserRepository>();
+builder.Services.AddScoped<LocalizationUserService>();
+builder.Services.AddScoped<ILocalizationUserService, LocalizationUserService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options =>
 {

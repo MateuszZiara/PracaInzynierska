@@ -70,6 +70,14 @@ export default defineConfig({
             '^/api/AspNetUsers/Edit': {
                 target,
                 secure: false
+            },
+            '^/api/Localization/GetAll': {
+                target,
+                secure: false
+            },
+            '^/api/LocalizationUser/CreateMany': {
+                target,
+                secure: false
             }
         },
         port: 5173,

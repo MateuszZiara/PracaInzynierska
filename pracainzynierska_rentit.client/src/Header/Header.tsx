@@ -85,7 +85,6 @@ export function Header() {
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    console.log("First Name:", data.firstName); // Log the firstName to the console
                     setFirstName(data.firstName);
                     setLastName(data.lastName);
                     setIsLoggedIn(true);
