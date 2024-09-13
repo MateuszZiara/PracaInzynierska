@@ -241,7 +241,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
         } else {
             window.location.reload();
         }
-    }const handleLocalizationChange = (selectedCities) => {
+    }
+    const handleLocalizationChange = (selectedCities) => {
         setLocalizationsSelected(selectedCities);
     };
     return (
