@@ -165,19 +165,30 @@ export function AuthModal({ onClose }: AuthModalProps) {
             setLoading(false);
             return;
         }
+
         const selectedIds = localizationsSelected.map((city) => {
             const localization = localizationsData.find((item) => `${item.name}, ${item.province}` === city);
             return localization ? localization.id : null;
-        }).filter(id => id !== null); 
+        }).filter(id => id !== null);
+
         try {
+            // Set the time to midnight UTC to avoid time zone issues
+            const birthDateUTC = birthValue ? new Date(Date.UTC(birthValue.getFullYear(), birthValue.getMonth(), birthValue.getDate())) : null;
+
+            // Format the date to 'YYYY-MM-DD'
+            const birthDateFormatted = birthDateUTC ? birthDateUTC.toISOString().split('T')[0] : null;
+
             const registerData = {
                 Email: email,
                 Password: password,
                 FirstName: firstname,
                 LastName: lastname,
-                BirthDate: birthValue,
+                BirthDay: birthDateFormatted, // Use the formatted date
                 Provider: "Website"
             };
+
+            console.log(registerData);
+
             const response = await fetch("api/AspNetUsers/Register", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -223,6 +234,9 @@ export function AuthModal({ onClose }: AuthModalProps) {
             setLoading(false);
         }
     };
+
+
+
     const handleLoginClick = async () => {
         const loginData = {
             Email: email,
@@ -362,6 +376,8 @@ export function AuthModal({ onClose }: AuthModalProps) {
                                         onDropdownOpen={() => { dropdownOpenRef.current = true; }}
                                         onDropdownClose={() => { dropdownOpenRef.current = false; }}
                                         size="lg"
+                                        maxValues={5}
+                                        comboboxProps={{ transitionProps: { transition: 'pop', duration: 200 } }}
                                     />
                                     <span className={styles.info}>
                                         Wybierz lokalizacje, do których chcesz się przeprowadzić. Spokojnie później możesz to zmienić w ustawieniach!

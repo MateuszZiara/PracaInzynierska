@@ -8,6 +8,7 @@ type BlockState = {
     widoczność: boolean;
     danePłatnicze: boolean;
 };
+
 export default function Settings() {
     const [isEmailConfirmed, setIsEmailConfirmed] = useState(false);
     const [expandedBlocks, setExpandedBlocks] = useState<BlockState>({
@@ -44,8 +45,15 @@ export default function Settings() {
             [block]: !prevState[block]
         }));
     };
-    const handleEmailVerification = () => {
-        setEmailSent(true);
+    const handleEmailVerification = async () => {
+        const response = await fetch("api/AspNetUsers/SendConfirmation", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        })
+        if(response.ok){
+            setEmailSent(true);
+        }
     };
     const handleSaveChanges = async () => {
         const nonEmptyFields = Object.entries(formData).filter(([key, value]) => value !== '');

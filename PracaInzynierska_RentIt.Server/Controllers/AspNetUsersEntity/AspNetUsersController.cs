@@ -21,7 +21,7 @@ public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, 
     }
     
     [HttpPost("Register")]
-    public ActionResult<AspNetUsers> Register([FromBody] AspNetUsersRegisterDto user) => _aspNetUsersServices.Register(user);
+    public Task<ActionResult<AspNetUsers>> Register([FromBody] AspNetUsersRegisterDto user) => _aspNetUsersServices.Register(user);
 
     [HttpGet("info")]
     public async Task<AspNetUsersResponseDTO> GetUserInfo() => await _aspNetUsersServices.GetUserInfo();
@@ -41,7 +41,13 @@ public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, 
     
     [HttpPost("Edit")]
     public bool Edit([FromBody] AspNetUsersEditDTO edit) => _aspNetUsersServices.Edit(edit);
-    
+
+    [HttpGet("ConfirmEmail")]
+    public async Task<IActionResult> ConfirmEmail(string userId, string token) =>
+        await _aspNetUsersServices.ConfirmEmail(userId, token);
+    [HttpPost("SendConfirmation")]
+    public async Task<bool> SendConfirmationEmail() => await _aspNetUsersServices.SendConfirmationEmail();
+
 }
 
 

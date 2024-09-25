@@ -3,6 +3,7 @@ using FluentMigrator.Runner;
 using Microsoft.EntityFrameworkCore;
 using PracaInzynierska_RentIt.Server.Models.Application.DBContext;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
+using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Email;
 using PracaInzynierska_RentIt.Server.Models.Localization;
 using PracaInzynierska_RentIt.Server.Models.LocalizationUser;
 using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
@@ -30,6 +31,13 @@ builder.Services.AddScoped<ILocalizationService, LocalizationService>();
 builder.Services.AddScoped<LocalizationUserRepository>();
 builder.Services.AddScoped<LocalizationUserService>();
 builder.Services.AddScoped<ILocalizationUserService, LocalizationUserService>();
+var configuration = builder.Configuration;
+builder.Services.AddScoped<EmailService>(sp => new EmailService(
+    smtpServer: "smtp.gmail.com",
+    port: 587,
+    fromEmail: "rentitnoreply@gmail.com",
+    password: configuration["EmailService:Email:Password"]
+));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options =>
 {

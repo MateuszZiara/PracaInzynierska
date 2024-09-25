@@ -56,15 +56,17 @@ public class AspNetUsersService : IAspNetUsersService
         return Repository.CheckEmail(email);
     }
 
-    public ActionResult<AspNetUsers> Register([FromBody] AspNetUsersRegisterDto users)
+    public Task<ActionResult<AspNetUsers>> Register([FromBody] AspNetUsersRegisterDto users)
     {
         var passwordHasher = new PasswordHasher<AspNetUsers>();
         string hashedPassword = passwordHasher.HashPassword(null, users.Password);
         users.Password = hashedPassword;
         return Repository.Register(users);
-    }
-
+    }   
+    
     public async Task<AspNetUsersResponseDTO> GetUserInfo() => new AspNetUsersResponseDTO().toDto(Repository.GetUserInfo());
 
-    
+    public async Task<IActionResult> ConfirmEmail(string userId, string token) => await Repository.ConfirmEmail(userId,token);
+    public async Task<bool> SendConfirmationEmail() => await Repository.SendConfirmationEmail();
+
 }

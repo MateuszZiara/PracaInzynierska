@@ -10,6 +10,7 @@ import {
 import { MantineProvider, createTheme } from '@mantine/core';
 import {Home} from './Home/Home';
 import Settings from './Settings/Settings';
+import ConfirmationPage from './ConfirmEmail/ConfirmationPage';
 
 const theme = createTheme({
 
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/Settings" element={<Settings />} />
+                <Route path="/confirm" element={<ConfirmationPage />} />
             </Routes>
         </BrowserRouter>
     </MantineProvider>

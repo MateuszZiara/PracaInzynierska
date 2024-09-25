@@ -78,6 +78,10 @@ export default defineConfig({
             '^/api/LocalizationUser/CreateMany': {
                 target,
                 secure: false
+            },
+            '^/api/AspNetUsers/SendConfirmation': {
+                target,
+                secure: false
             }
         },
         port: 5173,

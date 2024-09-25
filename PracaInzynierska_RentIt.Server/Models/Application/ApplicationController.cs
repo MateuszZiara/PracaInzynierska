@@ -3,7 +3,7 @@
 namespace PracaInzynierska_RentIt.Server.Models.Application;
 [Route("api/[controller]")]
 [ApiController]
-public class ApplicationController<T,TS, TR, TDto> : ControllerBase
+public abstract class ApplicationController<T,TS, TR, TDto> : ControllerBase
     where T : ApplicationEntity
     where TS : IApplicationService<T,TR, TDto> where TR : IApplicationRepository<T ,TDto>
 {

@@ -5,7 +5,7 @@ using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
 namespace PracaInzynierska_RentIt.Server.Models.Application;
 [Route("api/[controller]")]
 [ApiController]
-public class ApplicationIdentityController<T,TS, TR, TDto> : ControllerBase 
+public abstract class ApplicationIdentityController<T,TS, TR, TDto> : ControllerBase 
     where T : IdentityUser
     where TS : IApplicationIdentityService<T,TR, TDto> where TR : IApplicationIdentityRepository<T ,TDto>
 {

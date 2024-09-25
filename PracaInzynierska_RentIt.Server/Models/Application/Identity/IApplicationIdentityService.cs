@@ -12,8 +12,4 @@ public interface IApplicationIdentityService<T, TR, TDto> where TR : IApplicatio
     ActionResult<TDto> GetById(Guid id) => Repository.GetById(id);
     ActionResult<TDto> Create(T t) => Repository.Create(t); 
     bool Delete(Guid id) => Repository.Delete(id);
-    public bool Edit(AspNetUsersEditDTO newEntity);
-    public bool CheckEmail(String email);
-    public ActionResult<AspNetUsers> Register([FromBody] AspNetUsersRegisterDto users);
-    public Task<AspNetUsersResponseDTO> GetUserInfo();
 }

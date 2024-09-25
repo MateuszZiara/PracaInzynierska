@@ -14,19 +14,21 @@ public class AspNetUsersResponseDTO
     public virtual DateTime BirthDateTime { get; set; }
     public virtual UserRank UserRank { get; set; }
     public virtual bool EmailConfirmed { get; set; }
+    public virtual string Email { get; set; }
 
-    public AspNetUsersResponseDTO(string? firstName, string lastName, DateTime birthDateTime, UserRank userRank, bool emailConfirmed)
+    public AspNetUsersResponseDTO(string? firstName, string lastName, DateTime birthDateTime, UserRank userRank, bool emailConfirmed, string email)
     {
         FirstName = firstName;
         LastName = lastName;
         BirthDateTime = birthDateTime;
         UserRank = userRank;
         EmailConfirmed = emailConfirmed;
+        Email = email;
     }
 
     public AspNetUsersResponseDTO toDto(AspNetUsers user)
     {
         return new AspNetUsersResponseDTO(user.FirstName, user.LastName, user.BirthDate, user.UserRank,
-            user.EmailConfirmed);
+            user.EmailConfirmed, user.Email);
     }
 }
