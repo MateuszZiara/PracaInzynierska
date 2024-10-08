@@ -8,7 +8,7 @@ namespace PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 
 public class AspNetUsersService : IAspNetUsersService
 {
-    public AspNetUsersRepository Repository { get; }
+    public IAspNetUsersRepository Repository { get; }
     public AspNetUsersService(AspNetUsersRepository aspNetUsersRepository)
     {
         this.Repository = aspNetUsersRepository;
@@ -44,8 +44,9 @@ public class AspNetUsersService : IAspNetUsersService
             user.Avatar = newEntity.Avatar;
         if (newEntity.TwoFactorEnabled != null)
             user.TwoFactorEnabled = (bool)newEntity.TwoFactorEnabled;
-        user.ModifiedTime = DateTime.Now;
-        user.ModifiedBy = user.Email;
+        /*user.ModifiedTime = DateTime.Now;
+        user.ModifiedBy = user.Email;*/
+        Repository.ModifiedUpdate(user,"User");
         return Repository.UpdateUser(user);
     }
 
@@ -69,4 +70,15 @@ public class AspNetUsersService : IAspNetUsersService
     public async Task<IActionResult> ConfirmEmail(string userId, string token) => await Repository.ConfirmEmail(userId,token);
     public async Task<bool> SendConfirmationEmail() => await Repository.SendConfirmationEmail();
 
+    public async Task<bool> ResetPassword(AspNetUsersPasswordDTO passwordDto)
+    {
+        bool result = await Repository.ResetPassword(passwordDto);
+        if (result)
+        {
+            await Repository.Logout();
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -1,9 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Net;
 using System.Security.Claims;
+using Azure;
+using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NHibernate;
+using NHibernate.Event.Default;
 using PracaInzynierska_RentIt.Server.Models.Application;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity.Dtos;
@@ -16,11 +19,13 @@ public class AspNetUsersRepository : IAspNetUsersRepository
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<AspNetUsers> _userManager;
     private readonly EmailService _emailService;
-    public AspNetUsersRepository(UserManager<AspNetUsers> userManager, EmailService emailService, IHttpContextAccessor httpContextAccessor)
+    private readonly SignInManager<AspNetUsers> _signInManager;
+    public AspNetUsersRepository(UserManager<AspNetUsers> userManager, EmailService emailService, IHttpContextAccessor httpContextAccessor,  SignInManager<AspNetUsers> signInManager)
     {
         _userManager = userManager;
         _emailService = emailService;
         _httpContextAccessor = httpContextAccessor;
+        _signInManager = signInManager;
     }
     public AspNetUsersResponseDTO ConvertToDto(AspNetUsers user)
     {
@@ -136,6 +141,65 @@ public class AspNetUsersRepository : IAspNetUsersRepository
             throw new Exception("Can't send email. Email service is unavaible. Please contanct with support.");
         }
     }
+
+    public void ModifiedUpdate(AspNetUsers user, string modifier)
+    {
+        var session = NHibernateHelper.OpenSession();
+        var transaction = session.BeginTransaction();
+        user.ModifiedBy = modifier;
+        user.ModifiedTime = DateTime.Now;
+        session.SaveOrUpdate(user);
+        transaction.Commit();
+    }
+    public async Task<bool> ResetPassword(AspNetUsersPasswordDTO passwordDto)
+    {   
+        
+        var currentUser = await _userManager.FindByIdAsync(GetUserInfo().Id);
+        if (currentUser == null)
+        {
+            return false;
+        }
+
+        var passwordCheck = await _signInManager.CheckPasswordSignInAsync(currentUser, passwordDto.OldPassword, false);
+        if (!passwordCheck.Succeeded)
+        {
+            return false;
+        }
+
+        var result = await _userManager.ChangePasswordAsync(currentUser, passwordDto.OldPassword, passwordDto.NewPassword);
+        if (result.Succeeded)
+        {
+            ModifiedUpdate(currentUser,"User");
+            return true;
+        }
+
+        foreach (var error in result.Errors)
+        {
+            Console.WriteLine(error.Description);
+        }
+
+        return false;
+    }
+
+
+
+    public async Task<bool> Logout()
+    {
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext != null)
+        {
+            foreach (var cookie in httpContext.Request.Cookies.Keys)
+            {
+                if (cookie.StartsWith(".AspNetCore.Identity.Application"))
+                {
+                    httpContext.Response.Cookies.Delete(cookie);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
     public async Task<ActionResult<AspNetUsers>> Register(AspNetUsersRegisterDto user)
     {
         using (var session = NHibernateHelper.OpenSession())

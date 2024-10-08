@@ -7,10 +7,10 @@ using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 namespace PracaInzynierska_RentIt.Server.Controllers.AspNetUsersEntity;
 [Route("api/[controller]")]
 [ApiController]
-public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, AspNetUsersService, AspNetUsersRepository, AspNetUsersResponseDTO>
+public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, IAspNetUsersService, IAspNetUsersRepository, AspNetUsersResponseDTO>
 {
     private readonly IAspNetUsersService _aspNetUsersServices;
-    public AspNetUsersController(AspNetUsersService aspNetUsersServices) : base(aspNetUsersServices)
+    public AspNetUsersController(IAspNetUsersService aspNetUsersServices) : base(aspNetUsersServices)
     {
         _aspNetUsersServices = aspNetUsersServices;
     }
@@ -48,6 +48,15 @@ public class AspNetUsersController : ApplicationIdentityController<AspNetUsers, 
     [HttpPost("SendConfirmation")]
     public async Task<bool> SendConfirmationEmail() => await _aspNetUsersServices.SendConfirmationEmail();
 
+    [HttpPost("ResetPassword")]
+    public async Task<bool> ResetPassword([FromBody] AspNetUsersPasswordDTO passwordDto)
+    {
+        if (_aspNetUsersServices.ResetPassword(passwordDto).Result)
+        {
+            return true;
+        }
+        throw new Exception("Wrong password");
+    }
 }
 
 

@@ -41,8 +41,6 @@ export function Home()
     }, []);
     useEffect(() => {
         const image = images[currentSection] || './Section1-Photo.jpg';
-        console.log('Current Section:', currentSection);
-        console.log('Background Image:', image);
         setBackgroundImage(image);
     }, [currentSection]);
     const scrollToSection1 = () => {

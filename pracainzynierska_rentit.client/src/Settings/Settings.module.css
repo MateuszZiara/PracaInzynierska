@@ -176,8 +176,19 @@
 .verifyButton:hover{
     background-color: #a6d3ef;
 }
-.site{
-    height: 100vh;
-    z-index: -1;
-    background-color: #white;
+
+/* Add these styles to your existing CSS file */
+
+.error {
+    color: red;
+    margin-top: 5px;
+}
+
+.inputError {
+    border-color: red;
+}
+/* settings.module.css */
+.notificationRoot {
+    max-width: 400px;
+    margin: 0 auto; /* Center the notification */
 }

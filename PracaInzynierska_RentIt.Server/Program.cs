@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentMigrator.Runner;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using PracaInzynierska_RentIt.Server.Models.Application.DBContext;
 using PracaInzynierska_RentIt.Server.Models.AspNetUsersEntity;
@@ -10,7 +11,7 @@ using PracaInzynierska_RentIt.Server.Persistence.AspNetUsersEntity;
 using PracaInzynierska_RentIt.Server.Persistence.Localization;
 using PracaInzynierska_RentIt.Server.Persistence.LocalizationUser;
 using RentIt_PracaInzynierska.Server.Models.IdentityLogin;
-
+using Moq;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -23,7 +24,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<AspNetUsersRepository>();
 builder.Services.AddScoped<AspNetUsersService>();
 builder.Services.AddScoped<IAspNetUsersService, AspNetUsersService>();
-
+builder.Services.AddScoped<Mock<IAspNetUsersService>>();
+builder.Services.AddScoped<SignInManager<AspNetUsers>>();
 builder.Services.AddScoped<LocalizationRepository>();
 builder.Services.AddScoped<LocalizationService>();
 builder.Services.AddScoped<ILocalizationService, LocalizationService>();

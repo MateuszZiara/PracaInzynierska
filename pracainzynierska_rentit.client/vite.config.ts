@@ -82,6 +82,10 @@ export default defineConfig({
             '^/api/AspNetUsers/SendConfirmation': {
                 target,
                 secure: false
+            },
+            '^/api/AspNetUsers/ResetPassword': {
+                target,
+                secure: false
             }
         },
         port: 5173,

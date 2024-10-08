@@ -2,13 +2,15 @@
 import styles from './settings.module.css';
 import { FaUser, FaLock, FaEye, FaCreditCard, FaChevronDown, FaChevronUp, FaCheckCircle } from 'react-icons/fa';
 import { Header } from "../Header/Header.tsx";
+import {Notifications, notifications } from '@mantine/notifications';
+import { Button } from '@mantine/core';
+import classes from './Notif.module.css';
 type BlockState = {
     daneOsobowe: boolean;
     logowanie: boolean;
     widoczność: boolean;
     danePłatnicze: boolean;
 };
-
 export default function Settings() {
     const [isEmailConfirmed, setIsEmailConfirmed] = useState(false);
     const [expandedBlocks, setExpandedBlocks] = useState<BlockState>({
@@ -16,6 +18,11 @@ export default function Settings() {
         logowanie: false,
         widoczność: false,
         danePłatnicze: false
+    });
+    const [userData, setUserData] = useState({
+        FirstName: '',
+        LastName: '',
+        Email: '',
     });
     const [emailSent, setEmailSent] = useState(false); // New state for email verification status
     // State for the user inputs
@@ -27,11 +34,14 @@ export default function Settings() {
         PhoneNumber: '',
         Password: '',
     });
-    const [confirmPassword, setConfirmPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [passwordError, setPasswordError] = useState(''); // State for new password error
+    const [oldPasswordError, setOldPasswordError] = useState(''); // State for old password error
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        if (name === 'confirmPassword') {
-            setConfirmPassword(value);
+        if (name === 'newPassword') {
+            setNewPassword(value);
         } else {
             setFormData(prevState => ({
                 ...prevState,
@@ -39,30 +49,29 @@ export default function Settings() {
             }));
         }
     };
+
     const handleToggle = (block: keyof BlockState) => {
         setExpandedBlocks(prevState => ({
             ...prevState,
             [block]: !prevState[block]
         }));
     };
+
     const handleEmailVerification = async () => {
         const response = await fetch("api/AspNetUsers/SendConfirmation", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
-        })
-        if(response.ok){
+        });
+        if (response.ok) {
             setEmailSent(true);
         }
     };
+
     const handleSaveChanges = async () => {
         const nonEmptyFields = Object.entries(formData).filter(([key, value]) => value !== '');
 
         if (nonEmptyFields.length > 0) {
-            if (formData.Password !== confirmPassword) {
-                alert('Passwords do not match!');
-                return;
-            }
             nonEmptyFields.forEach(([key, value]) => {
                 console.log(`${key}: ${value}`);
             });
@@ -87,6 +96,7 @@ export default function Settings() {
             console.log("No changes to save.");
         }
     };
+
     useEffect(() => {
         const checkEmailConfirmed = async () => {
             try {
@@ -99,6 +109,11 @@ export default function Settings() {
                 if (response.ok) {
                     const data = await response.json();
                     setIsEmailConfirmed(data.emailConfirmed);
+                    setUserData({
+                        FirstName: data.firstName,
+                        LastName: data.lastName,
+                        Email: data.email,
+                    });
                 } else {
                     window.location.href = "/";
                 }
@@ -107,9 +122,71 @@ export default function Settings() {
             }
         };
         checkEmailConfirmed();
-        
+
     }, []);
+
+    async function handleResetPassword() {
+        // Reset error messages
+        setPasswordError('');
+        setOldPasswordError('');
+
+        // Validate new password
+        const passwordValidation = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        if (!passwordValidation.test(newPassword)) {
+            setPasswordError("Nowe hasło musi zawierać conajmniej jedną dużą literę, jeden symbol, jedną liczbę oraz musi być dłuższe niż 8 znaków");
+            notifications.show({
+                color: 'red',
+                title: 'Zmiana hasła',
+                message: 'Nowe hasło musi zawierać conajmniej jedną dużą literę, jeden symbol, jedną liczbę oraz musi być dłuższe niż 8 znaków!',
+                classNames: classes,
+            })
+            return;
+        }
+
+        const postData = {
+            oldPassword: formData.Password,
+            newPassword: newPassword
+        };
+
+        try {
+            const response = await fetch('api/AspNetUsers/ResetPassword', {
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+                body: JSON.stringify(postData)
+            });
+
+            if (response.ok) {
+                notifications.show({
+                    color: 'green',
+                    title: 'Zmiana hasła',
+                    message: 'Pomyślnie zmieniłeś swoje hasło nastąpi wylogowanie...',
+                    classNames: classes,
+                })
+                setTimeout(() => {
+                    window.location.reload();
+                }, 3000);
+                window.location.reload();
+            } else {
+                setOldPasswordError("Stare hasło jest niepoprawne");
+                notifications.show({
+                    color: 'red',
+                    title: 'Zmiana hasła',
+                    message: 'Twoje stare hasło jest niepoprawne!',
+                    classNames: classes,
+                })
+            }
+        
+        } catch (error) {
+            console.error("Error during password reset:", error);
+        }
+    }
+
     return (
+        <>
+            
         <div className={styles.site}>
             {Header()}
             <div className={styles.container}>
@@ -165,7 +242,7 @@ export default function Settings() {
                                 value={formData.FirstName}
                                 onChange={handleChange}
                                 className={styles.input}
-                                placeholder="test"
+                                placeholder={userData.FirstName}
                             />
                         </label>
                     </div>
@@ -178,6 +255,7 @@ export default function Settings() {
                                 value={formData.LastName}
                                 onChange={handleChange}
                                 className={styles.input}
+                                placeholder={userData.LastName}
                             />
                         </label>
                     </div>
@@ -190,6 +268,7 @@ export default function Settings() {
                                 value={formData.Email}
                                 onChange={handleChange}
                                 className={styles.input}
+                                placeholder={userData.Email}
                             />
                         </label>
                     </div>
@@ -217,6 +296,9 @@ export default function Settings() {
                             />
                         </label>
                     </div>
+                    <button className={styles.saveButton} onClick={handleSaveChanges}>
+                        Zapisz zmiany
+                    </button>
                 </div>
 
                 {/* Logowanie */}
@@ -230,28 +312,33 @@ export default function Settings() {
                 <div className={`${styles.expandedContent} ${expandedBlocks.logowanie ? styles.expanded : ''}`}>
                     <div className={styles.subBlock}>
                         <label>
-                            New Password
+                            Obecne Hasło
                             <input
                                 type="password"
                                 name="Password"
                                 value={formData.Password}
                                 onChange={handleChange}
-                                className={styles.input}
+                                className={`${styles.input} ${oldPasswordError ? styles.inputError : ''}`}
                             />
                         </label>
+                        {oldPasswordError && <div className={styles.error}>{oldPasswordError}</div>}
                     </div>
                     <div className={styles.subBlock}>
                         <label>
-                            Confirm Password
+                            Nowe Hasło
                             <input
                                 type="password"
-                                name="confirmPassword"
-                                value={confirmPassword}
+                                name="newPassword"
+                                value={newPassword}
                                 onChange={handleChange}
-                                className={styles.input}
+                                className={`${styles.input} ${passwordError ? styles.inputError : ''}`}
                             />
                         </label>
+                        {passwordError && <div className={styles.error}>{passwordError}</div>}
                     </div>
+                    <button className={styles.saveButton} onClick={handleResetPassword}>
+                        Zapisz zmiany
+                    </button>
                 </div>
 
                 {/* Widoczność */}
@@ -263,11 +350,7 @@ export default function Settings() {
                 </div>
 
                 <div className={`${styles.expandedContent} ${expandedBlocks.widoczność ? styles.expanded : ''}`}>
-                    <div className={styles.subBlock}>
-                        <label>
-                            {/* Content for visibility section */}
-                        </label>
-                    </div>
+                    Widoczność
                 </div>
 
                 {/* Dane płatnicze */}
@@ -279,46 +362,13 @@ export default function Settings() {
                 </div>
 
                 <div className={`${styles.expandedContent} ${expandedBlocks.danePłatnicze ? styles.expanded : ''}`}>
-                    <div className={styles.subBlock}>
-                        <label>
-                            Credit Card Number
-                            <input
-                                type="text"
-                                name="creditCardNumber"
-                                value={formData.creditCardNumber}
-                                onChange={handleChange}
-                                className={styles.input}
-                            />
-                        </label>
-                    </div>
-                    <div className={styles.subBlock}>
-                        <label>
-                            Expiry Date
-                            <input
-                                type="text"
-                                name="expiryDate"
-                                value={formData.expiryDate}
-                                onChange={handleChange}
-                                className={styles.input}
-                                placeholder="MM/YY"
-                            />
-                        </label>
-                    </div>
-                    <div className={styles.subBlock}>
-                        <label>
-                            CVV
-                            <input
-                                type="text"
-                                name="cvv"
-                                value={formData.cvv}
-                                onChange={handleChange}
-                                className={styles.input}
-                            />
-                        </label>
-                    </div>
+                    Dane płatnicze
                 </div>
-                <button className={styles.saveButton} onClick={handleSaveChanges}>Zapisz zmiany</button>
             </div>
+            
+            
         </div>
+        </>
+        
     );
 }

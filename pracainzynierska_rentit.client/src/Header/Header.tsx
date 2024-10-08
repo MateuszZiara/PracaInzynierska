@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
-import { Avatar } from "@mantine/core";
+import { Avatar, Skeleton } from "@mantine/core";
 import { AuthModal } from "./Auth";
 import styles from './Header.module.css';
 import { ProfileDropdown } from "./ProfileDropdown";
@@ -15,6 +15,7 @@ export function Header() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
 
     const location = useLocation();
 
@@ -95,6 +96,8 @@ export function Header() {
             } catch (error) {
                 console.error("Error checking login status:", error);
                 setIsLoggedIn(false);
+            } finally {
+                setIsLoading(false);
             }
         };
         checkUserLoggedIn();
@@ -114,17 +117,19 @@ export function Header() {
                 <span className={location.pathname === "/mieszkania" ? styles.active : styles.unactive} onClick={() => window.location.href = "/mieszkania"}>Mieszkania</span>
                 <span className={location.pathname === "/osoby" ? styles.active : styles.unactive} onClick={() => window.location.href = "/osoby"}>Osoby</span>
                 <span className={location.pathname === "/swipeit" ? styles.active : styles.unactive} onClick={() => window.location.href = "/swipeit"}>SwipeIt!</span>
-                
+
             </div>
             <div className={styles.profile} onClick={toggleDropdown} ref={profileRef}>
                 <FaBars className={styles.hamburgerProfile} />
                 <div className={styles.avatar}>
-                    {isLoggedIn ? (
+                    {isLoading ? (
+                        <Skeleton circle height={40} width={40} />
+                    ) : isLoggedIn ? (
                         <Avatar
                             color="initials"
                             radius="xl"
                             size="md"
-                            name={`${firstName} ${lastName}`} // Pass full name to the Avatar
+                            name={`${firstName} ${lastName}`}
                             className={styles.avatarInitials}
                         />
                     ) : (
